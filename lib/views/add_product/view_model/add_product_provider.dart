@@ -49,7 +49,7 @@ class AddProductProvider extends ChangeNotifier {
 
 // to add baseProduct
 
-    Future<void> addBaseProduct(
+  Future<void> addBaseProduct(
       {required String name,
       required String price,
       required String sellingPrice,
@@ -61,10 +61,8 @@ class AddProductProvider extends ChangeNotifier {
         isLoading = true;
         notifyListeners();
         final imageUrlList = await uploadImageToFirebase(pickedXfileList);
-
         if (imageUrlList.isNotEmpty) {
           DocumentReference productRef = firestore.collection("products").doc();
-
           await productRef.set({
             "id": productRef.id,
             "name": name,
@@ -75,8 +73,6 @@ class AddProductProvider extends ChangeNotifier {
             "category_name": categoryName,
             "image_url": imageUrlList,
           });
-
-          print("Product added successfully");
           showToast("Product added successfully");
         } else {
           print("Image upload failed");
@@ -88,7 +84,6 @@ class AddProductProvider extends ChangeNotifier {
     } catch (e) {
       isLoading = false;
       notifyListeners();
-      print("Error adding product: ${e.toString()}");
     }
   }
 

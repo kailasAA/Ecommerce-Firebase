@@ -1,11 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:shoe_app/views/categories/models/category_model.dart';
+import 'package:shoe_app/views/home/models/product_model.dart';
 
 class HomeProvider extends ChangeNotifier {
   bool isLoading = false;
   List<CategoryModel> categoryList = [];
-
+  List<ProductModel> productList = [];
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
   Future<void> getCategories() async {
@@ -31,9 +32,15 @@ class HomeProvider extends ChangeNotifier {
   Future<void> getAllProducts() async {
     try {
       isLoading = true;
-      var data =await firestore.collection("products").get();
-      var productList = data.docs;
-      
+      var data = await firestore.collection("products").get();
+      var list = data.docs;
+      productList = list
+          .map(
+            (product) => ProductModel.fromMap(product.data()),
+          )
+          .toList();
+      print("product fetched successfully");
+      print(productList);
     } catch (e) {
       print(e.toString());
     }

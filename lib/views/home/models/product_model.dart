@@ -26,7 +26,7 @@ class ProductModel {
       categoryId: data["category_id"],
       name: data['name'],
       categoryName: data['category_name'],
-      price: data['price'].toDouble(),
+      price: data['price'],
       sellingPrice: data["selling_price"],
       images: List<String>.from(data['image_url'] ?? []),
     );

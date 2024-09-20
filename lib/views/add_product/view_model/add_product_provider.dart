@@ -7,8 +7,8 @@ import 'package:shoe_app/common/common_functions/pick_image.dart';
 import 'package:shoe_app/common/common_functions/show_toast.dart';
 
 class AddProductProvider extends ChangeNotifier {
-  File? pickedImage;
-  XFile? pickedXfile;
+  List<XFile?> pickedXfileList = [];
+  List<File> pickedfileList = [];
   TextEditingController nameController = TextEditingController();
   TextEditingController brandController = TextEditingController();
   TextEditingController priceController = TextEditingController();
@@ -22,24 +22,34 @@ class AddProductProvider extends ChangeNotifier {
   bool isLoading = false;
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-  Future<String?> uploadImageToFirebase(XFile imageFile) async {
-    try {
-      FirebaseStorage storage = FirebaseStorage.instance;
-      String fileName = DateTime.now().millisecondsSinceEpoch.toString();
-      Reference ref = storage.ref().child('uploads/$fileName.jpg');
-      UploadTask uploadTask = ref.putFile(File(imageFile.path));
-      TaskSnapshot snapshot = await uploadTask;
-      String url = await snapshot.ref.getDownloadURL();
-      return url;
-    } catch (e) {
-      print("Error uploading image: $e");
-      return null;
+  Future<List<String?>> uploadImageToFirebase(List<XFile?> imageFiles) async {
+    List<String> downloadUrls = [];
+    for (var imageFile in imageFiles) {
+      try {
+        FirebaseStorage storage = FirebaseStorage.instance;
+
+        String fileName = DateTime.now().millisecondsSinceEpoch.toString();
+
+        Reference ref = storage.ref().child('uploads/$fileName.jpg');
+
+        UploadTask uploadTask = ref.putFile(File(imageFile?.path ?? ""));
+
+        TaskSnapshot snapshot = await uploadTask;
+
+        String url = await snapshot.ref.getDownloadURL();
+
+        downloadUrls.add(url);
+      } catch (e) {
+        print("Error uploading image: $e");
+        return [];
+      }
     }
+    return downloadUrls;
   }
 
 // to add baseProduct
 
-  Future<void> addBaseProduct(
+    Future<void> addBaseProduct(
       {required String name,
       required String price,
       required String sellingPrice,
@@ -47,12 +57,12 @@ class AddProductProvider extends ChangeNotifier {
       required String categoryName,
       required String brandName}) async {
     try {
-      if (pickedXfile != null) {
+      if (pickedXfileList.isNotEmpty) {
         isLoading = true;
         notifyListeners();
-        final imageUrl = await uploadImageToFirebase(pickedXfile!);
+        final imageUrlList = await uploadImageToFirebase(pickedXfileList);
 
-        if (imageUrl != null) {
+        if (imageUrlList.isNotEmpty) {
           DocumentReference productRef = firestore.collection("products").doc();
 
           await productRef.set({
@@ -63,8 +73,7 @@ class AddProductProvider extends ChangeNotifier {
             "selling_price": sellingPrice,
             "category_id": categoryId,
             "category_name": categoryName,
-            "image_url": imageUrl,
-            "variants": {},
+            "image_url": imageUrlList,
           });
 
           print("Product added successfully");
@@ -88,8 +97,9 @@ class AddProductProvider extends ChangeNotifier {
     priceController.clear();
     sellingPriceController.clear();
     brandController.clear();
-    pickedImage = null;
-    pickedXfile = null;
+    pickedXfileList = [];
+    pickedfileList = [];
+    pickedXfileList = [];
     isNameValidated = true;
     isPriceValidated = true;
     isSellingPriceValidated = true;
@@ -146,19 +156,18 @@ class AddProductProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> selectPickedImage() async {
-    final XFile? image = await pickImage();
-
-    if (image != null) {
-      pickedXfile = image;
-      pickedImage = File(image.path);
-      notifyListeners();
-    }
-  }
-
   void changeSelectedCategory(String category) {
     selectedCategory = category;
     notifyListeners();
   }
-  
+
+  Future<void> selectMultipleImage() async {
+    final list = await pickMultipleImage();
+
+    if (list.isNotEmpty) {
+      pickedXfileList = list;
+      pickedfileList = list.map((xFile) => File(xFile?.path ?? "")).toList();
+      notifyListeners();
+    }
+  }
 }

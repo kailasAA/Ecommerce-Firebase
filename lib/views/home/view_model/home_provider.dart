@@ -27,4 +27,15 @@ class HomeProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  Future<void> getAllProducts() async {
+    try {
+      isLoading = true;
+      var data =await firestore.collection("products").get();
+      var productList = data.docs;
+      
+    } catch (e) {
+      print(e.toString());
+    }
+  }
 }

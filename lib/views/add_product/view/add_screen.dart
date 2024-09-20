@@ -24,7 +24,7 @@ class AddScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: ColorPallette.scaffoldBgColor,
       body: Consumer<AddProductProvider>(builder: (context, value, child) {
-        final pickeImage = value.pickedImage;
+        final pickeImagelist = value.pickedfileList;
         final TextEditingController nameController = value.nameController;
         final TextEditingController priceController = value.priceController;
         final TextEditingController sellingPriceController =
@@ -66,40 +66,57 @@ class AddScreen extends StatelessWidget {
                   ),
                   Column(
                     children: [
-                      30.verticalSpace,
                       GestureDetector(
                         onTap: () {
                           context
                               .read<AddProductProvider>()
-                              .selectPickedImage();
+                              .selectMultipleImage();
                         },
-                        child: NeumorphicContainer(
-                          height: 250.h,
-                          width: 330.w,
-                          childWidget: pickeImage == null
-                              ? Icon(
+                        child: pickeImagelist.isEmpty
+                            ? NeumorphicContainer(
+                                height: 250.h,
+                                width: 330.w,
+                                childWidget:
+                                    // pickeImage.isEmpty
+                                    //     ?
+                                    Icon(
                                   Icons.add_a_photo_outlined,
                                   size: 50.r,
                                   color: ColorPallette.greyColor,
-                                )
-                              : ClipRRect(
-                                  borderRadius: BorderRadius.circular(
-                                      15.r), // Rounded corners
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(15.r),
-                                    ),
-                                    height: 230.h,
-                                    width: 310.w,
-                                    child: Image.file(
-                                      pickeImage,
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
+                                ))
+                            : SizedBox(
+                                height: 320.h,
+                                child: ListView.builder(
+                                  itemCount: pickeImagelist.length,
+                                  scrollDirection: Axis.horizontal,
+                                  itemBuilder: (context, index) {
+                                    return Padding(
+                                      padding: EdgeInsets.only(left: 10.r),
+                                      child: NeumorphicContainer(
+                                        height: 250.h,
+                                        width: 330.w,
+                                        childWidget: ClipRRect(
+                                          borderRadius: BorderRadius.circular(
+                                              15.r), // Rounded corners
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(15.r),
+                                            ),
+                                            height: 230.h,
+                                            width: 310.w,
+                                            child: Image.file(
+                                              pickeImagelist[index],
+                                              fit: BoxFit.cover,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  },
                                 ),
-                        ),
+                              ),
                       ),
-                      20.verticalSpace,
                       Form(
                         key: formkey,
                         child: Padding(
@@ -226,7 +243,7 @@ class AddScreen extends StatelessWidget {
                       30.verticalSpace,
                       GestureDetector(
                         onTap: () {
-                          if (pickeImage != null) {
+                          if (pickeImagelist.isNotEmpty) {
                             context
                                 .read<AddProductProvider>()
                                 .nameValidation(nameController.text);

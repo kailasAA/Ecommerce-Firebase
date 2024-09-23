@@ -13,6 +13,8 @@ import 'package:shoe_app/utils/color_pallette.dart';
 import 'package:shoe_app/utils/font_pallette.dart';
 import 'package:shoe_app/views/detail_page/view_model/product_detail_provider.dart';
 import 'package:shoe_app/views/home/models/product_model.dart';
+import 'package:shoe_app/views/home/view_model/home_provider.dart';
+import 'package:shoe_app/views/main_screen%20copy/view/main_screen.dart';
 import 'package:tuple/tuple.dart';
 
 class DetailScreen extends StatefulWidget {
@@ -245,6 +247,14 @@ class ProductDetailsWidget extends StatelessWidget {
                   InkWell(
                     onTap: () {
                       confirmationDialog(
+                          onTap: () {
+                            context
+                                .read<ProductDetailProvider>()
+                                .removeProduct(product?.id ?? "");
+                            context.read<HomeProvider>().getAllProducts();
+                            Navigator.pushNamed(
+                                context, RouteGenerator.mainScreen);
+                          },
                           context: context,
                           buttonText: "Remove",
                           content: "Do you want to delete this ?");

@@ -69,6 +69,15 @@ class CatgeoryProvider extends ChangeNotifier {
     notifyListeners();
     try {
       await _firestore.collection("categories").doc(categoryId).delete();
+      var products = await _firestore
+          .collection("products")
+          .where('category_id', isEqualTo: categoryId)
+          .get();
+
+      for (var doc in products.docs) {
+        await _firestore.collection("products").doc(doc.id).delete();
+      }
+
       getCategories();
     } catch (e) {
       print(e.toString());

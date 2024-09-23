@@ -93,6 +93,17 @@ class ProductDetailProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> removeProduct(String productId) async {
+    try {
+      final productRef =
+          FirebaseFirestore.instance.collection('products').doc(productId);
+      await productRef.delete();
+      notifyListeners();
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+
   // Future<void> updateProductInfo(String productId, String name, String price,
   //     String sellingPrice, String brandName) async {
   //   final productRef =

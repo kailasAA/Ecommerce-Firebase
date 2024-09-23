@@ -47,7 +47,7 @@ class AddScreen extends StatelessWidget {
               )
             : ListView(
                 children: [
-                  20.verticalSpace,
+                  10.verticalSpace,
                   Row(
                     children: [
                       IconButton(
@@ -64,6 +64,7 @@ class AddScreen extends StatelessWidget {
                       ),
                     ],
                   ),
+                  10.verticalSpace,
                   Column(
                     children: [
                       GestureDetector(
@@ -86,12 +87,15 @@ class AddScreen extends StatelessWidget {
                                 ))
                             : SizedBox(
                                 height: 320.h,
+                                width: double.infinity,
                                 child: ListView.builder(
+                                  shrinkWrap: true,
+                                  padding: EdgeInsets.zero,
                                   itemCount: pickeImagelist.length,
                                   scrollDirection: Axis.horizontal,
                                   itemBuilder: (context, index) {
                                     return Padding(
-                                      padding: EdgeInsets.only(left: 10.r),
+                                      padding: EdgeInsets.all(20.r),
                                       child: NeumorphicContainer(
                                         height: 250.h,
                                         width: 330.w,
@@ -117,6 +121,7 @@ class AddScreen extends StatelessWidget {
                                 ),
                               ),
                       ),
+                      20.verticalSpace,
                       Form(
                         key: formkey,
                         child: Padding(
@@ -268,7 +273,7 @@ class AddScreen extends StatelessWidget {
                                   price: priceController.text.toString(),
                                   sellingPrice:
                                       sellingPriceController.text.toString(),
-                                  categoryId: addProductArguments.categoryId,
+                                  categoryId: addProductArguments.categoryId??"",
                                   categoryName:
                                       addProductArguments.categoryName ?? "");
                             } else {

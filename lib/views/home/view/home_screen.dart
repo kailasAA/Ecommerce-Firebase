@@ -1,8 +1,11 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:shoe_app/common_widgets/neumorphic.dart';
 import 'package:shoe_app/common_widgets/progress_indicators.dart';
+import 'package:shoe_app/route/argument_model/product_detail_arguments.dart';
+import 'package:shoe_app/route/route_generator.dart';
 import 'package:shoe_app/utils/color_pallette.dart';
 import 'package:shoe_app/utils/font_pallette.dart';
 import 'package:shoe_app/views/categories/models/category_model.dart';
@@ -43,15 +46,33 @@ class _HomeScreenState extends State<HomeScreen> {
               : CustomScrollView(
                   slivers: [
                     SliverToBoxAdapter(
-                      child: Column(
-                        children: [
-                          80.verticalSpace,
-                          NeumorphicContainer(
-                            height: 200.h,
-                            width: 320.w,
-                          ),
-                          30.verticalSpace,
-                        ],
+                      child: Padding(
+                        padding: EdgeInsets.all(15.r),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            40.verticalSpace,
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: SizedBox(
+                                height: 30.h,
+                                child: Text(
+                                  "Welcome Back",
+                                  style: FontPallette.headingStyle.copyWith(
+                                      color: ColorPallette.blackColor),
+                                ),
+                              ),
+                            ),
+                            10.verticalSpace,
+                            NeumorphicContainer(
+                              offset: const Offset(5, 5),
+                              blurRadius: 15,
+                              height: 200.h,
+                              width: 320.w,
+                            ),
+                            30.verticalSpace,
+                          ],
+                        ),
                       ),
                     ),
                     productList.isNotEmpty
@@ -62,13 +83,15 @@ class _HomeScreenState extends State<HomeScreen> {
                                 return Column(
                                   children: [
                                     HomeProductListWithHeading(
-                                      products: productList
-                                          .where(
-                                            (product) =>
-                                                product.categoryId ==
-                                                category.id,
-                                          )
-                                          .toList(),
+                                      products:
+                                          // productList,
+                                          productList
+                                              .where(
+                                                (product) =>
+                                                    product.categoryId ==
+                                                    category.id,
+                                              )
+                                              .toList(),
                                       productHeading: category.categoryName,
                                     ),
                                   ],
@@ -124,74 +147,107 @@ class HomeProductListWithHeading extends StatelessWidget {
                     scrollDirection: Axis.horizontal,
                     itemBuilder: (context, index) {
                       final product = products[index];
-                      return Padding(
-                        padding: EdgeInsets.all(10.r),
-                        child: NeumorphicContainer(
-                          blurRadius: 15,
-                          offset: const Offset(5, 5),
-                          height: 220.h,
-                          width: 160.w,
-                          childWidget: Padding(
-                            padding: EdgeInsets.all(10.r),
-                            child: Column(
-                              children: [
-                                Container(
-                                  height: 130.w,
-                                  width: 140.w,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(10.r),
-                                  ),
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(
-                                        15.r), // Rounded corners
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        borderRadius:
-                                            BorderRadius.circular(15.r),
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.pushNamed(
+                              context, RouteGenerator.detailScreen,
+                              arguments: ProductDetailArguments(
+                                  categoryId: product.categoryId,
+                                  catgeoryName: product.categoryName,
+                                  product: product));
+                        },
+                        child: Padding(
+                          padding: EdgeInsets.all(10.r),
+                          child: NeumorphicContainer(
+                            offset: const Offset(3, 3),
+                            blurRadius: 12.r,
+                            height: 220.h,
+                            width: 160.w,
+                            childWidget: Padding(
+                              padding: EdgeInsets.all(10.r),
+                              child: Column(
+                                children: [
+                                  SizedBox(
+                                    height: 130.w,
+                                    child: ClipRRect(
+                                      borderRadius: const BorderRadius.vertical(
+                                        top: Radius.circular(12),
                                       ),
-                                      height: 230.h,
-                                      width: 310.w,
-                                      child: Image.network(
-                                        product.images?[0] ?? "",
-                                        fit: BoxFit.cover,
-                                      ),
+                                      child: (product.images ?? []).isNotEmpty
+                                          ? CachedNetworkImage(
+                                              imageUrl:
+                                                  product.images?[0] ?? "",
+                                              imageBuilder:
+                                                  (context, imageProvider) {
+                                                return Container(
+                                                  width: double.infinity,
+                                                  decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            10),
+                                                    image: DecorationImage(
+                                                      image: imageProvider,
+                                                      fit: BoxFit.fill,
+                                                    ),
+                                                  ),
+                                                );
+                                              },
+                                              placeholder: (context, url) =>
+                                                  Center(
+                                                      child: LoadingAnimation(
+                                                size: 20.r,
+                                              )),
+                                              errorWidget:
+                                                  (context, url, error) =>
+                                                      const Icon(Icons.error),
+                                            )
+                                          : Container(
+                                              height: 130.w,
+                                              decoration: BoxDecoration(
+                                                  color:
+                                                      ColorPallette.greyColor,
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          10)),
+                                            ),
                                     ),
                                   ),
-                                ),
-                                5.verticalSpace,
-                                Column(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    SizedBox(
-                                      height: 40.h,
-                                      child: Text(
-                                        product.name ?? "",
-                                        style: FontPallette.headingStyle
-                                            .copyWith(fontSize: 13.sp),
-                                      ),
-                                    ),
-                                    // 10.verticalSpace,
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text(
-                                          product.brandName ?? "",
+                                  5.verticalSpace,
+                                  Column(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      SizedBox(
+                                        height: 40.h,
+                                        child: Text(
+                                          product.name ?? "",
                                           style: FontPallette.headingStyle
                                               .copyWith(fontSize: 13.sp),
                                         ),
-                                        Text(
-                                          "₹${product.price ?? ""}",
-                                          style: FontPallette.headingStyle
-                                              .copyWith(fontSize: 13.sp),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                )
-                              ],
+                                      ),
+                                      // 10.verticalSpace,
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text(
+                                            product.brandName ?? "",
+                                            style: FontPallette.headingStyle
+                                                .copyWith(fontSize: 13.sp),
+                                          ),
+                                          Text(
+                                            "₹${product.price ?? ""}",
+                                            style: FontPallette.headingStyle
+                                                .copyWith(fontSize: 13.sp),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  )
+                                ],
+                              ),
                             ),
                           ),
                         ),

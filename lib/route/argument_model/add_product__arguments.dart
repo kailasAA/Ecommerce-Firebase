@@ -1,5 +1,5 @@
 class AddProductArguments {
   String? categoryName;
-  String categoryId;
+  String ?categoryId;
   AddProductArguments({this.categoryName, required this.categoryId});
 }

@@ -1,7 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shoe_app/route/argument_model/add_product__arguments.dart';
+import 'package:shoe_app/route/argument_model/product_detail_arguments.dart';
+import 'package:shoe_app/route/argument_model/product_editing_argments.dart';
 import 'package:shoe_app/views/add_product/view/add_screen.dart';
+import 'package:shoe_app/views/detail_page/detail_screen.dart';
+import 'package:shoe_app/views/edit_product/edit_product_screen.dart';
 import 'package:shoe_app/views/main_screen%20copy/view/main_screen.dart';
 import 'package:shoe_app/views/splash/splash.dart';
 
@@ -19,6 +23,7 @@ class RouteGenerator {
   static const detailScreen = "detailScreen";
   static const addProductScreen = "addProductScreen";
   static const stockScreen = "stockScreen";
+  static const editScreen = "editProductScreen";
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
     final arguments = settings.arguments;
@@ -33,6 +38,16 @@ class RouteGenerator {
             AddScreen(
               addProductArguments: arguments as AddProductArguments,
             ));
+      case detailScreen:
+        return buildRoute(
+            settings,
+            DetailScreen(
+              productDetailArguments: arguments as ProductDetailArguments,
+            ));
+      case editScreen:
+        return buildRoute(settings, EditProductScreen(
+          productEditingArgments: settings.arguments as ProductEditingArgments,
+        ));
       default:
         return buildRoute(settings, const SplashScreen());
     }

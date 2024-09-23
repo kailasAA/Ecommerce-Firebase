@@ -13,7 +13,6 @@ class AddProductProvider extends ChangeNotifier {
   TextEditingController brandController = TextEditingController();
   TextEditingController priceController = TextEditingController();
   TextEditingController sellingPriceController = TextEditingController();
-  TextEditingController stockController = TextEditingController();
   String selectedCategory = "";
   bool isNameValidated = true;
   bool isPriceValidated = true;
@@ -22,30 +21,30 @@ class AddProductProvider extends ChangeNotifier {
   bool isLoading = false;
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-  Future<List<String?>> uploadImageToFirebase(List<XFile?> imageFiles) async {
-    List<String> downloadUrls = [];
-    for (var imageFile in imageFiles) {
-      try {
-        FirebaseStorage storage = FirebaseStorage.instance;
+  // Future<List<String?>> uploadImageToFirebase(List<XFile?> imageFiles) async {
+  //   List<String> downloadUrls = [];
+  //   for (var imageFile in imageFiles) {
+  //     try {
+  //       FirebaseStorage storage = FirebaseStorage.instance;
 
-        String fileName = DateTime.now().millisecondsSinceEpoch.toString();
+  //       String fileName = DateTime.now().millisecondsSinceEpoch.toString();
 
-        Reference ref = storage.ref().child('uploads/$fileName.jpg');
+  //       Reference ref = storage.ref().child('uploads/$fileName.jpg');
 
-        UploadTask uploadTask = ref.putFile(File(imageFile?.path ?? ""));
+  //       UploadTask uploadTask = ref.putFile(File(imageFile?.path ?? ""));
 
-        TaskSnapshot snapshot = await uploadTask;
+  //       TaskSnapshot snapshot = await uploadTask;
 
-        String url = await snapshot.ref.getDownloadURL();
+  //       String url = await snapshot.ref.getDownloadURL();
 
-        downloadUrls.add(url);
-      } catch (e) {
-        print("Error uploading image: $e");
-        return [];
-      }
-    }
-    return downloadUrls;
-  }
+  //       downloadUrls.add(url);
+  //     } catch (e) {
+  //       print("Error uploading image: $e");
+  //       return [];
+  //     }
+  //   }
+  //   return downloadUrls;
+  // }
 
 // to add baseProduct
 
@@ -166,3 +165,29 @@ class AddProductProvider extends ChangeNotifier {
     }
   }
 }
+
+
+  Future<List<String?>> uploadImageToFirebase(List<XFile?> imageFiles) async {
+    List<String> downloadUrls = [];
+    for (var imageFile in imageFiles) {
+      try {
+        FirebaseStorage storage = FirebaseStorage.instance;
+
+        String fileName = DateTime.now().millisecondsSinceEpoch.toString();
+
+        Reference ref = storage.ref().child('uploads/$fileName.jpg');
+
+        UploadTask uploadTask = ref.putFile(File(imageFile?.path ?? ""));
+
+        TaskSnapshot snapshot = await uploadTask;
+
+        String url = await snapshot.ref.getDownloadURL();
+
+        downloadUrls.add(url);
+      } catch (e) {
+        print("Error uploading image: $e");
+        return [];
+      }
+    }
+    return downloadUrls;
+  }

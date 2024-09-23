@@ -6,7 +6,7 @@ class ProductModel {
   String? categoryName;
   String? price;
   String? sellingPrice;
-  List<String>? images;
+  List<String?>? images;
 
   ProductModel({
     this.id,

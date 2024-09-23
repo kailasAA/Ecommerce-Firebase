@@ -6,14 +6,15 @@ import 'package:shoe_app/utils/color_pallette.dart';
 class LoadingAnimationStaggeredDotsWave extends StatelessWidget {
   const LoadingAnimationStaggeredDotsWave({
     super.key,
+    this.size,
   });
-
+  final double? size;
   @override
   Widget build(BuildContext context) {
     return Center(
       child: LoadingAnimationWidget.staggeredDotsWave(
-        color: ColorPallette.blackColor,
-        size: 40.h,
+        color: ColorPallette.greyColor,
+        size: size ?? 40.h,
       ),
     );
   }
@@ -29,5 +30,19 @@ class ThreeDotLoadingAnimation extends StatelessWidget {
     return Center(
         child: LoadingAnimationWidget.threeRotatingDots(
             color: ColorPallette.blackColor, size: 30.h));
+  }
+}
+
+class LoadingAnimation extends StatelessWidget {
+  const LoadingAnimation({
+    super.key,
+    this.size,
+  });
+  final double? size;
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+        child: LoadingAnimationWidget.hexagonDots(
+            color: ColorPallette.greyColor, size: size ?? 30.h));
   }
 }

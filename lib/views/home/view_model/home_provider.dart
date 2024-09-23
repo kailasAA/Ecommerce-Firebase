@@ -39,9 +39,13 @@ class HomeProvider extends ChangeNotifier {
             (product) => ProductModel.fromMap(product.data()),
           )
           .toList();
+      isLoading = false;
+      notifyListeners();
       print("product fetched successfully");
       print(productList);
     } catch (e) {
+      isLoading = false;
+      notifyListeners();
       print(e.toString());
     }
   }

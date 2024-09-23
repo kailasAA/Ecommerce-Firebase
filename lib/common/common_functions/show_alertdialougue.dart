@@ -8,6 +8,7 @@ void showAlertDialog(
     {required BuildContext context,
     required String headingText,
     required TextEditingController controller,
+    
     required VoidCallback onAddCategory}) {
   showDialog(
     context: context,

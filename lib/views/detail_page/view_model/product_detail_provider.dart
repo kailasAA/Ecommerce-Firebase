@@ -5,6 +5,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shoe_app/common/common_functions/pick_image.dart';
+import 'package:shoe_app/views/detail_page/models/variant_model.dart';
 import 'package:shoe_app/views/home/models/product_model.dart';
 
 class ProductDetailProvider extends ChangeNotifier {
@@ -13,6 +14,11 @@ class ProductDetailProvider extends ChangeNotifier {
   List<XFile?> pickedXfileList = [];
   List<File> pickedfileList = [];
   ProductModel? product;
+  List<Variant> variantList = [];
+  String? selectedVariantId;
+  Variant? variant;
+
+
 
   Future<void> getProductDetails(String productId) async {
     try {
@@ -24,6 +30,56 @@ class ProductDetailProvider extends ChangeNotifier {
       notifyListeners();
 
       print("product fetched successfully");
+      print(product);
+    } catch (e) {
+      isLoading = false;
+      notifyListeners();
+
+      print(e.toString());
+    }
+  }
+
+  Future<void> getVariants(String productId) async {
+    try {
+      isLoading = true;
+      notifyListeners();
+      var data = await firestore.collection("variants").get();
+      final list = data.docs;
+      final allVariants = list.map(
+        (variant) {
+          return Variant.fromMap(variant.data());
+        },
+      ).toList();
+      variantList = [];
+      variantList = allVariants.where(
+        (element) {
+          return element.productId == productId;
+        },
+      ).toList();
+      print(variantList);
+      // selectedVariantId = variantList.first.variantId ?? "";
+      variant = variantList[0];
+      isLoading = false;
+      notifyListeners();
+      print(
+          "variant detail fetched successfully variant id is $selectedVariantId");
+    } catch (e) {
+      isLoading = false;
+      notifyListeners();
+      print(e.toString());
+    }
+  }
+
+  Future<void> getVariantDetails(String variantId) async {
+    try {
+      variant = null;
+      isLoading = true;
+      var data =
+          await firestore.collection("variants").doc(variantId).get();
+      variant = Variant.fromMap(data.data() as Map<String, dynamic>);
+      isLoading = false;
+      notifyListeners();
+      print("variant fetched successfully");
       print(product);
     } catch (e) {
       isLoading = false;
@@ -103,6 +159,24 @@ class ProductDetailProvider extends ChangeNotifier {
       print(e.toString());
     }
   }
+
+  // Future<void> addVariants() async {
+  //   try {
+  //     DocumentReference variantRef = firestore.collection("variants").doc();
+  //     await variantRef.set({
+  //       'variant_id': variantRef.id,
+  //       'product_id': productRef.id,
+  //       'color': color,
+  //       "name": name,
+  //       "brand_name": brandName,
+  //       "category_id": categoryId,
+  //       "category_name": categoryName,
+  //       "image_url": imageUrlList,
+  //     });
+  //   } catch (e) {
+  //     print(e.toString());
+  //   }
+  // }
 
   // Future<void> updateProductInfo(String productId, String name, String price,
   //     String sellingPrice, String brandName) async {

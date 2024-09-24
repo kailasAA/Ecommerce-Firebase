@@ -11,6 +11,7 @@ import 'package:shoe_app/route/argument_model/product_editing_argments.dart';
 import 'package:shoe_app/utils/color_pallette.dart';
 import 'package:shoe_app/utils/font_pallette.dart';
 import 'package:shoe_app/views/detail_page/detail_screen.dart';
+import 'package:shoe_app/views/detail_page/models/variant_model.dart';
 import 'package:shoe_app/views/detail_page/view_model/product_detail_provider.dart';
 import 'package:shoe_app/views/edit_product/view_model/edit_product_provider.dart';
 import 'package:shoe_app/views/home/models/product_model.dart';
@@ -32,9 +33,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
   void initState() {
     WidgetsFlutterBinding.ensureInitialized().addPostFrameCallback(
       (timeStamp) {
-        context
-            .read<EditProductProvider>()
-            .fetchImageUrl(widget.productEditingArgments.product?.images ?? []);
+        context.read<EditProductProvider>().fetchImageUrl(
+            widget.productEditingArgments.variant?.imageUrlList ?? []);
       },
     );
 
@@ -44,14 +44,13 @@ class _EditProductScreenState extends State<EditProductScreen> {
   @override
   Widget build(BuildContext context) {
     final product = widget.productEditingArgments.product;
+    final variant = widget.productEditingArgments.variant;
+    TextEditingController colorController =
+        TextEditingController(text: variant?.color ?? "");
     TextEditingController nameController =
         TextEditingController(text: product?.name ?? "");
     TextEditingController brandController =
         TextEditingController(text: product?.brandName ?? "");
-    TextEditingController priceController =
-        TextEditingController(text: product?.price);
-    TextEditingController sellingPriceController =
-        TextEditingController(text: product?.sellingPrice ?? "");
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -158,8 +157,10 @@ class _EditProductScreenState extends State<EditProductScreen> {
                                                     context
                                                         .read<
                                                             EditProductProvider>()
-                                                        .removeImageUrl(index,
-                                                            product?.id ?? "");
+                                                        .removeImageUrl(
+                                                            index,
+                                                            variant?.variantId ??
+                                                                "");
                                                     Navigator.pop(context);
                                                   },
                                                   context: context,
@@ -212,60 +213,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                               : SizedBox(
                                   height: 20.h,
                                 ),
-                          NuemorphicTextField(
-                            onChanged: (value) {
-                              if (value.isEmpty || value.length < 2) {
-                                context
-                                    .read<EditProductProvider>()
-                                    .priceValidation(value);
-                              }
-                            },
-                            keyboardType: TextInputType.number,
-                            textEditingController: priceController,
-                            headingText: "Price",
-                            hintText: "Enter price of product",
-                          ),
-                          5.verticalSpace,
-                          !productEditingProvider.isPriceValidated
-                              ? SizedBox(
-                                  height: 20.h,
-                                  child: Text(
-                                    "Please give a valid price",
-                                    style: FontPallette.subtitleStyle.copyWith(
-                                        color: ColorPallette.redColor,
-                                        fontSize: 10.sp),
-                                  ),
-                                )
-                              : SizedBox(
-                                  height: 20.h,
-                                ),
-                          NuemorphicTextField(
-                            onChanged: (value) {
-                              if (value.isEmpty || value.length < 2) {
-                                context
-                                    .read<EditProductProvider>()
-                                    .sellingPriceValidation(value);
-                              }
-                            },
-                            keyboardType: TextInputType.number,
-                            textEditingController: sellingPriceController,
-                            headingText: "Selling Price",
-                            hintText: "Enter price of product",
-                          ),
-                          5.verticalSpace,
-                          !productEditingProvider.isSellingPriceValidated
-                              ? SizedBox(
-                                  height: 20.h,
-                                  child: Text(
-                                    "Please give a valid price",
-                                    style: FontPallette.subtitleStyle.copyWith(
-                                        color: ColorPallette.redColor,
-                                        fontSize: 10.sp),
-                                  ),
-                                )
-                              : SizedBox(
-                                  height: 20.h,
-                                ),
+
                           NuemorphicTextField(
                             onChanged: (value) {
                               if (value.isEmpty || value.length < 2) {
@@ -292,6 +240,34 @@ class _EditProductScreenState extends State<EditProductScreen> {
                                 )
                               : SizedBox(
                                   height: 20.h,
+                                ),
+
+                          NuemorphicTextField(
+                            onChanged: (value) {
+                              if (value.isEmpty || value.length < 2) {
+                                context
+                                    .read<EditProductProvider>()
+                                    .colourValidation(value);
+                              }
+                            },
+                            keyboardType: TextInputType.name,
+                            textEditingController: colorController,
+                            headingText: "Color",
+                            hintText: "Enter name of Color",
+                          ),
+                          5.verticalSpace,
+                          !productEditingProvider.isColourValidated
+                              ? SizedBox(
+                                  height: 20.h,
+                                  child: Text(
+                                    "Please give a valid color",
+                                    style: FontPallette.subtitleStyle.copyWith(
+                                        color: ColorPallette.redColor,
+                                        fontSize: 10.sp),
+                                  ),
+                                )
+                              : SizedBox(
+                                  height: 20.h,
                                 )
                         ],
                       ),
@@ -300,18 +276,33 @@ class _EditProductScreenState extends State<EditProductScreen> {
                       onTap: () {
                         context.read<EditProductProvider>().updateProduct(
                             ProductModel(
-                                brandName: brandController.text,
-                                categoryId: product?.categoryId ?? "",
-                                categoryName: product?.categoryName ?? "",
-                                id: product?.id ?? "",
-                                images: productEditingProvider.imageUrlList,
-                                name: nameController.text,
-                                price: priceController.text,
-                                sellingPrice: sellingPriceController.text),
+                              brandName: brandController.text,
+                              categoryId: product?.categoryId ?? "",
+                              categoryName: product?.categoryName ?? "",
+                              id: product?.id ?? "",
+                              name: nameController.text,
+                            ),
                             product?.id ?? "");
+                        context.read<EditProductProvider>().updateVariant(
+                            Variant(
+                              color: colorController.text,
+                              productId: variant?.productId,
+                              categoryId: variant?.categoryId ?? "",
+                              categoryName: variant?.categoryName ?? "",
+                              variantId: variant?.variantId ?? "",
+                              imageUrlList: productEditingProvider.imageUrlList,
+                            ),
+                            variant?.variantId ?? "");
                         context
                             .read<ProductDetailProvider>()
-                            .getProductDetails(product?.id ?? "");
+                            .getProductDetails(variant?.productId ?? "");
+                        context
+                            .read<ProductDetailProvider>()
+                            .getVariantDetails(variant?.variantId ?? "");
+                        context
+                            .read<ProductDetailProvider>()
+                            .getVariants(product?.id ?? "");
+
                         context.read<HomeProvider>().getAllProducts();
                       },
                       child: NeumorphicContainer(

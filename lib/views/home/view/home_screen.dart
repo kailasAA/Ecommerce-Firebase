@@ -9,6 +9,7 @@ import 'package:shoe_app/route/route_generator.dart';
 import 'package:shoe_app/utils/color_pallette.dart';
 import 'package:shoe_app/utils/font_pallette.dart';
 import 'package:shoe_app/views/categories/models/category_model.dart';
+import 'package:shoe_app/views/detail_page/models/variant_model.dart';
 import 'package:shoe_app/views/home/models/product_model.dart';
 import 'package:shoe_app/views/home/view_model/home_provider.dart';
 import 'package:tuple/tuple.dart';
@@ -25,6 +26,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     context.read<HomeProvider>().getCategories();
     context.read<HomeProvider>().getAllProducts();
+    context.read<HomeProvider>().getAllVariants();
     super.initState();
   }
 
@@ -32,14 +34,16 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: ColorPallette.scaffoldBgColor,
-      body: Selector<HomeProvider, Tuple3>(
+      body: Selector<HomeProvider, Tuple4>(
         selector: (p0, p1) {
-          return Tuple3(p1.categoryList, p1.isLoading, p1.productList);
+          return Tuple4(
+              p1.categoryList, p1.isLoading, p1.productList, p1.variantList);
         },
         builder: (context, value, child) {
           final isLoading = value.item2;
           List<CategoryModel> categoryList = value.item1;
           List<ProductModel> productList = value.item3;
+          List<Variant> variantList = value.item4;
 
           return isLoading
               ? const LoadingAnimationStaggeredDotsWave()
@@ -83,6 +87,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 return Column(
                                   children: [
                                     HomeProductListWithHeading(
+                                      variantList: variantList,
                                       products:
                                           // productList,
                                           productList
@@ -124,9 +129,11 @@ class HomeProductListWithHeading extends StatelessWidget {
     super.key,
     this.productHeading,
     required this.products,
+    required this.variantList,
   });
   final String? productHeading;
   final List<ProductModel> products;
+  final List<Variant> variantList;
   @override
   Widget build(BuildContext context) {
     return products.isNotEmpty
@@ -147,6 +154,12 @@ class HomeProductListWithHeading extends StatelessWidget {
                     scrollDirection: Axis.horizontal,
                     itemBuilder: (context, index) {
                       final product = products[index];
+                      final variants = variantList.where(
+                        (element) {
+                          return element.productId == product.id;
+                        },
+                      ).toList();
+                      final variant = variants[0];
                       return GestureDetector(
                         onTap: () {
                           Navigator.pushNamed(
@@ -173,10 +186,12 @@ class HomeProductListWithHeading extends StatelessWidget {
                                       borderRadius: const BorderRadius.vertical(
                                         top: Radius.circular(12),
                                       ),
-                                      child: (product.images ?? []).isNotEmpty
+                                      child: (variant.imageUrlList ?? [])
+                                              .isNotEmpty
                                           ? CachedNetworkImage(
                                               imageUrl:
-                                                  product.images?[0] ?? "",
+                                                  variant.imageUrlList?[0] ??
+                                                      "",
                                               imageBuilder:
                                                   (context, imageProvider) {
                                                 return Container(
@@ -187,7 +202,7 @@ class HomeProductListWithHeading extends StatelessWidget {
                                                             10),
                                                     image: DecorationImage(
                                                       image: imageProvider,
-                                                      fit: BoxFit.fill,
+                                                      fit: BoxFit.cover,
                                                     ),
                                                   ),
                                                 );
@@ -237,11 +252,11 @@ class HomeProductListWithHeading extends StatelessWidget {
                                             style: FontPallette.headingStyle
                                                 .copyWith(fontSize: 13.sp),
                                           ),
-                                          Text(
-                                            "₹${product.price ?? ""}",
-                                            style: FontPallette.headingStyle
-                                                .copyWith(fontSize: 13.sp),
-                                          ),
+                                          // Text(
+                                          //   "₹${product.price ?? ""}",
+                                          //   style: FontPallette.headingStyle
+                                          //       .copyWith(fontSize: 13.sp),
+                                          // ),
                                         ],
                                       ),
                                     ],

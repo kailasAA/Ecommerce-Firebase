@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
+import 'package:shoe_app/common/common_functions/show_toast.dart';
 import 'package:shoe_app/common_widgets/neumorphic.dart';
 import 'package:shoe_app/common_widgets/progress_indicators.dart';
 import 'package:shoe_app/gen/assets.gen.dart';
@@ -11,10 +12,10 @@ import 'package:shoe_app/route/argument_model/product_editing_argments.dart';
 import 'package:shoe_app/route/route_generator.dart';
 import 'package:shoe_app/utils/color_pallette.dart';
 import 'package:shoe_app/utils/font_pallette.dart';
+import 'package:shoe_app/views/detail_page/models/variant_model.dart';
 import 'package:shoe_app/views/detail_page/view_model/product_detail_provider.dart';
 import 'package:shoe_app/views/home/models/product_model.dart';
 import 'package:shoe_app/views/home/view_model/home_provider.dart';
-import 'package:shoe_app/views/main_screen%20copy/view/main_screen.dart';
 import 'package:tuple/tuple.dart';
 
 class DetailScreen extends StatefulWidget {
@@ -29,9 +30,16 @@ class DetailScreen extends StatefulWidget {
 class _DetailScreenState extends State<DetailScreen> {
   @override
   void initState() {
-    context
-        .read<ProductDetailProvider>()
-        .getProductDetails(widget.productDetailArguments.product?.id ?? "");
+    WidgetsBinding.instance.addPostFrameCallback(
+      (timeStamp) {
+        context
+            .read<ProductDetailProvider>()
+            .getProductDetails(widget.productDetailArguments.product?.id ?? "");
+        context
+            .read<ProductDetailProvider>()
+            .getVariants(widget.productDetailArguments.product?.id ?? "");
+      },
+    );
 
     super.initState();
   }
@@ -52,21 +60,32 @@ class _DetailScreenState extends State<DetailScreen> {
         ),
       ),
       backgroundColor: ColorPallette.scaffoldBgColor,
-      body: Selector<ProductDetailProvider, Tuple2<bool, ProductModel?>>(
-        selector: (p0, detailProvider) =>
-            Tuple2(detailProvider.isLoading, detailProvider.product),
+      body: Selector<ProductDetailProvider,
+          Tuple4<bool, ProductModel?, List<Variant>, Variant?>>(
+        selector: (p0, detailProvider) => Tuple4(
+            detailProvider.isLoading,
+            detailProvider.product,
+            detailProvider.variantList,
+            detailProvider.variant),
         builder: (context, value, child) {
           final product = value.item2;
           final isLoading = value.item1;
+          final variantList = value.item3;
+          final variant = value.item4;
+
           return isLoading
               ? const LoadingAnimation()
               : ListView(
                   children: [
                     ImageSlider(
-                      product: product,
+                      variant: variant,
                     ),
                     const SizedBox(height: 20),
-                    ProductDetailsWidget(product: product),
+                    ProductDetailsWidget(
+                      variantList: variantList,
+                      variant: variant,
+                      product: product,
+                    ),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -107,30 +126,57 @@ class _DetailScreenState extends State<DetailScreen> {
                           height: 140.h,
                           child: ListView.builder(
                             shrinkWrap: true,
-                            itemCount: 2,
+                            itemCount: variantList.length,
                             scrollDirection: Axis.horizontal,
-                            itemBuilder: (context, index) => Padding(
-                              padding: EdgeInsets.all(10.r),
-                              child: Column(
-                                children: [
-                                  Container(
-                                    height: 80.h,
-                                    width: 100.w,
-                                    decoration: BoxDecoration(
-                                      color: ColorPallette.greyColor,
-                                      borderRadius: BorderRadius.circular(15),
+                            itemBuilder: (context, index) {
+                              final variantAtIndex = variantList[index];
+                              final isVariant = variantAtIndex.variantId ==
+                                  variant?.variantId;
+                              return Padding(
+                                padding: EdgeInsets.all(10.r),
+                                child: Column(
+                                  children: [
+                                    InkWell(
+                                      onTap: () {
+                                        context
+                                            .read<ProductDetailProvider>()
+                                            .getVariantDetails(
+                                                variantAtIndex.variantId ?? "");
+                                      },
+                                      child: Container(
+                                        height: 80.h,
+                                        width: 80.w,
+                                        decoration: BoxDecoration(
+                                          border: Border.all(
+                                              color:
+                                                  ColorPallette.darkGreyColor,
+                                              width: isVariant ? 2 : 0),
+                                          color: ColorPallette.greyColor,
+                                          borderRadius:
+                                              BorderRadius.circular(15),
+                                        ),
+                                        child: ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                          child: CachedNetworkImage(
+                                              fit: BoxFit.cover,
+                                              imageUrl: variantList[index]
+                                                      .imageUrlList?[0] ??
+                                                  ""),
+                                        ),
+                                      ),
                                     ),
-                                  ),
-                                  5.verticalSpace,
-                                  Text(
-                                    "color",
-                                    style: FontPallette.headingStyle.copyWith(
-                                        fontSize: 15.sp,
-                                        color: ColorPallette.darkGreyColor),
-                                  )
-                                ],
-                              ),
-                            ),
+                                    5.verticalSpace,
+                                    Text(
+                                      variantList[index].color ?? "",
+                                      style: FontPallette.headingStyle.copyWith(
+                                          fontSize: 13.sp,
+                                          color: ColorPallette.darkGreyColor),
+                                    )
+                                  ],
+                                ),
+                              );
+                            },
                           ),
                         ),
                         Padding(
@@ -212,10 +258,14 @@ class _DetailScreenState extends State<DetailScreen> {
 class ProductDetailsWidget extends StatelessWidget {
   const ProductDetailsWidget({
     super.key,
-    required this.product,
+    this.variant,
+    this.product,
+    required this.variantList,
   });
 
+  final Variant? variant;
   final ProductModel? product;
+  final List<Variant> variantList;
 
   @override
   Widget build(BuildContext context) {
@@ -236,7 +286,8 @@ class ProductDetailsWidget extends StatelessWidget {
                   InkWell(
                     onTap: () {
                       Navigator.pushNamed(context, RouteGenerator.editScreen,
-                          arguments: ProductEditingArgments(product: product));
+                          arguments: ProductEditingArgments(
+                              variant: variant, product: product));
                     },
                     child: SizedBox(
                         height: 30.h,
@@ -246,18 +297,22 @@ class ProductDetailsWidget extends StatelessWidget {
                   20.horizontalSpace,
                   InkWell(
                     onTap: () {
-                      confirmationDialog(
-                          onTap: () {
-                            context
-                                .read<ProductDetailProvider>()
-                                .removeProduct(product?.id ?? "");
-                            context.read<HomeProvider>().getAllProducts();
-                            Navigator.pushNamed(
-                                context, RouteGenerator.mainScreen);
-                          },
-                          context: context,
-                          buttonText: "Remove",
-                          content: "Do you want to delete this ?");
+                      if (variantList.length > 1) {
+                        confirmationDialog(
+                            onTap: () {
+                              context
+                                  .read<ProductDetailProvider>()
+                                  .removeProduct(variant?.variantId ?? "");
+                              context.read<HomeProvider>().getAllProducts();
+                              Navigator.pushNamed(
+                                  context, RouteGenerator.mainScreen);
+                            },
+                            context: context,
+                            buttonText: "Remove",
+                            content: "Do you want to delete this ?");
+                      } else {
+                        showToast("There should be atleast one variant");
+                      }
                     },
                     child: SizedBox(
                         height: 30.h,
@@ -275,17 +330,17 @@ class ProductDetailsWidget extends StatelessWidget {
                 .copyWith(fontSize: 16.sp, color: ColorPallette.darkGreyColor),
           ),
           5.verticalSpace,
-          Text(
-            "Price : ₹${product?.price ?? ""}",
-            style: FontPallette.headingStyle
-                .copyWith(fontSize: 16.sp, color: ColorPallette.darkGreyColor),
-          ),
-          5.verticalSpace,
-          Text(
-            "Selling Price : ₹${product?.sellingPrice ?? ""}",
-            style: FontPallette.headingStyle
-                .copyWith(fontSize: 16.sp, color: ColorPallette.darkGreyColor),
-          )
+          // Text(
+          //   "Price : ₹${variant?.price ?? ""}",
+          //   style: FontPallette.headingStyle
+          //       .copyWith(fontSize: 16.sp, color: ColorPallette.darkGreyColor),
+          // ),
+          // 5.verticalSpace,
+          // Text(
+          //   "Selling Price : ₹${product?.sellingPrice ?? ""}",
+          //   style: FontPallette.headingStyle
+          //       .copyWith(fontSize: 16.sp, color: ColorPallette.darkGreyColor),
+          // )
         ],
       ),
     );
@@ -293,8 +348,8 @@ class ProductDetailsWidget extends StatelessWidget {
 }
 
 class ImageSlider extends StatefulWidget {
-  const ImageSlider({super.key, required this.product});
-  final ProductModel? product;
+  const ImageSlider({super.key, required this.variant});
+  final Variant? variant;
   @override
   State<ImageSlider> createState() => _ImageSliderState();
 }
@@ -355,7 +410,7 @@ class _ImageSliderState extends State<ImageSlider> {
 
   @override
   Widget build(BuildContext context) {
-    return (widget.product?.images ?? []).isNotEmpty
+    return (widget.variant?.imageUrlList ?? []).isNotEmpty
         ? SizedBox(
             height: 270.h,
             width: double.infinity,
@@ -363,7 +418,8 @@ class _ImageSliderState extends State<ImageSlider> {
               scrollDirection: Axis.horizontal,
               controller: pageController,
               itemBuilder: (context, index) {
-                final currentIndex = index % widget.product!.images!.length;
+                final currentIndex =
+                    index % (widget.variant?.imageUrlList ?? []).length;
                 return Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8),
                   child: NeumorphicContainer(
@@ -378,7 +434,8 @@ class _ImageSliderState extends State<ImageSlider> {
                           top: Radius.circular(12),
                         ),
                         child: CachedNetworkImage(
-                          imageUrl: widget.product?.images?[currentIndex] ?? "",
+                          imageUrl:
+                              widget.variant?.imageUrlList?[currentIndex] ?? "",
                           imageBuilder: (context, imageProvider) {
                             return Container(
                               width: double.infinity,

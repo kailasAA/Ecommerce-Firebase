@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:shoe_app/common/common_functions/pick_image.dart';
 import 'package:shoe_app/common/common_functions/show_toast.dart';
 import 'package:shoe_app/views/add_product/view_model/add_product_provider.dart';
+import 'package:shoe_app/views/detail_page/models/variant_model.dart';
 import 'package:shoe_app/views/home/models/product_model.dart';
 
 class EditProductProvider extends ChangeNotifier {
   bool isLoading = false;
   bool isNameValidated = true;
+  bool isColourValidated = true;
   bool isPriceValidated = true;
   bool isSellingPriceValidated = true;
   bool isBrandValidated = true;
@@ -20,6 +22,16 @@ class EditProductProvider extends ChangeNotifier {
       notifyListeners();
     } else {
       isNameValidated = true;
+      notifyListeners();
+    }
+  }
+
+    void colourValidation(String value) {
+    if (value.isEmpty && value.length < 2) {
+      isColourValidated = false;
+      notifyListeners();
+    } else {
+      isColourValidated = true;
       notifyListeners();
     }
   }
@@ -37,10 +49,10 @@ class EditProductProvider extends ChangeNotifier {
   bool isValidated(
       TextEditingController nameController,
       TextEditingController priceController,
-      TextEditingController sellingPriceController) {
+      TextEditingController sellingPriceController,TextEditingController colorController) {
     if (nameController.text.isNotEmpty &&
         priceController.text.isNotEmpty &&
-        sellingPriceController.text.isNotEmpty) {
+        sellingPriceController.text.isNotEmpty&& colorController.text.isNotEmpty) {
       return true;
     } else {
       return false;
@@ -77,8 +89,8 @@ class EditProductProvider extends ChangeNotifier {
     imageUrlList.removeAt(index);
     notifyListeners();
     try {
-      final productRef = _firestore.collection("products").doc(id);
-      await productRef.update({"image_url": imageUrlList});
+      // final productRef = _firestore.collection("variants").doc(id);
+      // await productRef.update({"image_url": imageUrlList});
       print("image is deleted");
       isLoading = false;
       notifyListeners();
@@ -103,11 +115,11 @@ class EditProductProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> updateProduct(ProductModel? product, String productId) async {
+  Future<void> updateProduct(ProductModel product, String productId) async {
     try {
       isLoading = true;
       final productRef = _firestore.collection("products").doc(productId);
-      await productRef.update(product!.toMap());
+      await productRef.update(product.toMap());
       print("the product is updated");
       isLoading = false;
       notifyListeners();
@@ -115,6 +127,22 @@ class EditProductProvider extends ChangeNotifier {
     } catch (e) {
       isLoading = false;
       showToast("Product was not updated");
+      notifyListeners();
+    }
+  }
+
+  Future<void> updateVariant(Variant? variant, String variantId) async {
+    try {
+      isLoading = true;
+      final productRef = _firestore.collection("variants").doc(variantId);
+      await productRef.update(variant!.toMap());
+      print("the variant is updated");
+      isLoading = false;
+      notifyListeners();
+      showToast("variant sucessfully updated");
+    } catch (e) {
+      isLoading = false;
+      showToast("variant was not updated");
       notifyListeners();
     }
   }

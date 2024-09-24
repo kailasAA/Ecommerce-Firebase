@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:shoe_app/views/categories/models/category_model.dart';
+import 'package:shoe_app/views/detail_page/models/variant_model.dart';
 import 'package:shoe_app/views/home/models/product_model.dart';
 
 class HomeProvider extends ChangeNotifier {
@@ -8,6 +9,7 @@ class HomeProvider extends ChangeNotifier {
   List<CategoryModel> categoryList = [];
   List<ProductModel> productList = [];
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
+  List<Variant> variantList = [];
 
   Future<void> getCategories() async {
     try {
@@ -43,6 +45,29 @@ class HomeProvider extends ChangeNotifier {
       notifyListeners();
       print("product fetched successfully");
       print(productList);
+    } catch (e) {
+      isLoading = false;
+      notifyListeners();
+      print(e.toString());
+    }
+  }
+
+  Future<void> getAllVariants() async {
+    try {
+      isLoading = true;
+      var data = await firestore.collection("variants").get();
+      final list = data.docs;
+      final allVariants = list.map(
+        (variant) {
+          return Variant.fromMap(variant.data());
+        },
+      ).toList();
+      variantList = [];
+      variantList = allVariants;
+      print(variantList);
+      isLoading = false;
+      notifyListeners();
+      print("variant detail fetched successfully");
     } catch (e) {
       isLoading = false;
       notifyListeners();

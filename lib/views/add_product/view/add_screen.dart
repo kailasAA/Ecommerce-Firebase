@@ -26,13 +26,10 @@ class AddScreen extends StatelessWidget {
       body: Consumer<AddProductProvider>(builder: (context, value, child) {
         final pickeImagelist = value.pickedfileList;
         final TextEditingController nameController = value.nameController;
-        final TextEditingController priceController = value.priceController;
-        final TextEditingController sellingPriceController =
-            value.sellingPriceController;
+        final TextEditingController colorController = value.colorController;
         final isNameValidated = value.isNameValidated;
-        final isPriceValidate = value.isPriceValidated;
         final isBrandValidate = value.isBrandValidated;
-        final isSellingPriceVlidated = value.isSellingPriceValidated;
+        final isColorValidate = value.isColorValidated;
         final TextEditingController brandController = value.brandController;
         bool isLoading = value.isLoading;
 
@@ -129,6 +126,7 @@ class AddScreen extends StatelessWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
+
                               NuemorphicTextField(
                                 onChanged: (value) {
                                   if (value.isEmpty || value.length < 2) {
@@ -157,53 +155,27 @@ class AddScreen extends StatelessWidget {
                                   : SizedBox(
                                       height: 20.h,
                                     ),
+
+
                               NuemorphicTextField(
                                 onChanged: (value) {
                                   if (value.isEmpty || value.length < 2) {
                                     context
                                         .read<AddProductProvider>()
-                                        .priceValidation(value);
+                                        .colorValidation(value);
                                   }
                                 },
-                                keyboardType: TextInputType.number,
-                                textEditingController: priceController,
-                                headingText: "Price",
-                                hintText: "Enter price of product",
+                                keyboardType: TextInputType.name,
+                                textEditingController: colorController,
+                                headingText: "Color",
+                                hintText: "Enter color of the product",
                               ),
                               5.verticalSpace,
-                              !isPriceValidate
+                              !isColorValidate
                                   ? SizedBox(
                                       height: 20.h,
                                       child: Text(
-                                        "Please give a valid price",
-                                        style: FontPallette.subtitleStyle
-                                            .copyWith(
-                                                color: ColorPallette.redColor,
-                                                fontSize: 10.sp),
-                                      ),
-                                    )
-                                  : SizedBox(
-                                      height: 20.h,
-                                    ),
-                              NuemorphicTextField(
-                                onChanged: (value) {
-                                  if (value.isEmpty || value.length < 2) {
-                                    context
-                                        .read<AddProductProvider>()
-                                        .sellingPriceValidation(value);
-                                  }
-                                },
-                                keyboardType: TextInputType.number,
-                                textEditingController: sellingPriceController,
-                                headingText: "Selling Price",
-                                hintText: "Enter price of product",
-                              ),
-                              5.verticalSpace,
-                              !isSellingPriceVlidated
-                                  ? SizedBox(
-                                      height: 20.h,
-                                      child: Text(
-                                        "Please give a valid price",
+                                        "Please give a valid Color",
                                         style: FontPallette.subtitleStyle
                                             .copyWith(
                                                 color: ColorPallette.redColor,
@@ -251,14 +223,10 @@ class AddScreen extends StatelessWidget {
                           if (pickeImagelist.isNotEmpty) {
                             context
                                 .read<AddProductProvider>()
+                                .colorValidation(colorController.text);
+                            context
+                                .read<AddProductProvider>()
                                 .nameValidation(nameController.text);
-                            context
-                                .read<AddProductProvider>()
-                                .priceValidation(priceController.text);
-                            context
-                                .read<AddProductProvider>()
-                                .sellingPriceValidation(
-                                    sellingPriceController.text);
                             context
                                 .read<AddProductProvider>()
                                 .brandValidation(brandController.text);
@@ -268,12 +236,14 @@ class AddScreen extends StatelessWidget {
                             if (isValidated) {
                               print("form is validated");
                               context.read<AddProductProvider>().addBaseProduct(
+                                  color: colorController.text,
                                   brandName: brandController.text,
                                   name: nameController.text,
-                                  price: priceController.text.toString(),
-                                  sellingPrice:
-                                      sellingPriceController.text.toString(),
-                                  categoryId: addProductArguments.categoryId??"",
+                                  // price: priceController.text.toString(),
+                                  // sellingPrice:
+                                  //     sellingPriceController.text.toString(),
+                                  categoryId:
+                                      addProductArguments.categoryId ?? "",
                                   categoryName:
                                       addProductArguments.categoryName ?? "");
                             } else {

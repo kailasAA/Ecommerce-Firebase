@@ -34,10 +34,10 @@ class _DetailScreenState extends State<DetailScreen> {
       (timeStamp) {
         context
             .read<ProductDetailProvider>()
-            .getProductDetails(widget.productDetailArguments.product?.id ?? "");
+            .getVariants(widget.productDetailArguments.product?.id ?? "");
         context
             .read<ProductDetailProvider>()
-            .getVariants(widget.productDetailArguments.product?.id ?? "");
+            .getProductDetails(widget.productDetailArguments.product?.id ?? "");
       },
     );
 
@@ -100,7 +100,12 @@ class _DetailScreenState extends State<DetailScreen> {
                                 style: FontPallette.headingStyle,
                               ),
                               InkWell(
-                                onTap: () {},
+                                onTap: () {
+                                  Navigator.pushNamed(
+                                      context, RouteGenerator.addVariantScreen,
+                                      arguments: ProductEditingArgments(
+                                          variant: variant, product: product));
+                                },
                                 child: Container(
                                   height: 30.h,
                                   width: 70.w,
@@ -148,9 +153,10 @@ class _DetailScreenState extends State<DetailScreen> {
                                         width: 80.w,
                                         decoration: BoxDecoration(
                                           border: Border.all(
-                                              color:
-                                                  ColorPallette.darkGreyColor,
-                                              width: isVariant ? 2 : 0),
+                                              color: isVariant
+                                                  ? ColorPallette.blackColor
+                                                  : ColorPallette.greyColor,
+                                              width: isVariant ? 3 : 2),
                                           color: ColorPallette.greyColor,
                                           borderRadius:
                                               BorderRadius.circular(15),
@@ -189,7 +195,12 @@ class _DetailScreenState extends State<DetailScreen> {
                                 style: FontPallette.headingStyle,
                               ),
                               InkWell(
-                                onTap: () {},
+                                onTap: () {
+                                  Navigator.pushNamed(
+                                      context, RouteGenerator.addSizeScreen,
+                                      arguments: ProductEditingArgments(
+                                          variant: variant, product: product));
+                                },
                                 child: Container(
                                   height: 30.h,
                                   width: 70.w,
@@ -303,9 +314,17 @@ class ProductDetailsWidget extends StatelessWidget {
                               context
                                   .read<ProductDetailProvider>()
                                   .removeProduct(variant?.variantId ?? "");
+                              context
+                                  .read<ProductDetailProvider>()
+                                  .getVariants(product?.id ?? "");
                               context.read<HomeProvider>().getAllProducts();
-                              Navigator.pushNamed(
-                                  context, RouteGenerator.mainScreen);
+                              context
+                                  .read<ProductDetailProvider>()
+                                  .getProductDetails(product?.id ?? "");
+
+                              Navigator.of(context).pop();
+                              // Navigator.pushNamed(
+                              //     context, RouteGenerator.mainScreen);
                             },
                             context: context,
                             buttonText: "Remove",
@@ -327,14 +346,14 @@ class ProductDetailsWidget extends StatelessWidget {
           Text(
             "Brand : ${product?.brandName ?? ""}",
             style: FontPallette.headingStyle
-                .copyWith(fontSize: 16.sp, color: ColorPallette.darkGreyColor),
+                .copyWith(fontSize: 15.sp, color: ColorPallette.darkGreyColor),
           ),
           5.verticalSpace,
-          // Text(
-          //   "Price : ₹${variant?.price ?? ""}",
-          //   style: FontPallette.headingStyle
-          //       .copyWith(fontSize: 16.sp, color: ColorPallette.darkGreyColor),
-          // ),
+          Text(
+            "Color : ${variant?.color ?? ""}",
+            style: FontPallette.headingStyle
+                .copyWith(fontSize: 15.sp, color: ColorPallette.darkGreyColor),
+          ),
           // 5.verticalSpace,
           // Text(
           //   "Selling Price : ₹${product?.sellingPrice ?? ""}",

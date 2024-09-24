@@ -1,6 +1,8 @@
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 import 'package:shoe_app/views/add_product/view_model/add_product_provider.dart';
+import 'package:shoe_app/views/add_size/view_model/add_size_provider.dart';
+import 'package:shoe_app/views/add_variant/view_model/add_variant_provider.dart';
 import 'package:shoe_app/views/categories/view_model.dart/catgeory_provider.dart';
 import 'package:shoe_app/views/detail_page/view_model/product_detail_provider.dart';
 import 'package:shoe_app/views/edit_product/view_model/edit_product_provider.dart';
@@ -26,6 +28,12 @@ class Multiproviders {
     ),
     ChangeNotifierProvider(
       create: (context) => ProductDetailProvider(),
+    ),
+    ChangeNotifierProvider(
+      create: (context) => AddVariantProvider(),
+    ),
+    ChangeNotifierProvider(
+      create: (context) => AddSizeProvider(),
     )
   ];
 }

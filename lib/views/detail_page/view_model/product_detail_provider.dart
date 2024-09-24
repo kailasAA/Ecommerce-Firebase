@@ -15,10 +15,7 @@ class ProductDetailProvider extends ChangeNotifier {
   List<File> pickedfileList = [];
   ProductModel? product;
   List<Variant> variantList = [];
-  String? selectedVariantId;
   Variant? variant;
-
-
 
   Future<void> getProductDetails(String productId) async {
     try {
@@ -41,6 +38,8 @@ class ProductDetailProvider extends ChangeNotifier {
 
   Future<void> getVariants(String productId) async {
     try {
+      variant = null;
+      variantList = [];
       isLoading = true;
       notifyListeners();
       var data = await firestore.collection("variants").get();
@@ -56,13 +55,13 @@ class ProductDetailProvider extends ChangeNotifier {
           return element.productId == productId;
         },
       ).toList();
+      
       print(variantList);
       // selectedVariantId = variantList.first.variantId ?? "";
       variant = variantList[0];
       isLoading = false;
       notifyListeners();
-      print(
-          "variant detail fetched successfully variant id is $selectedVariantId");
+      print("variant detail fetched successfully");
     } catch (e) {
       isLoading = false;
       notifyListeners();
@@ -74,8 +73,7 @@ class ProductDetailProvider extends ChangeNotifier {
     try {
       variant = null;
       isLoading = true;
-      var data =
-          await firestore.collection("variants").doc(variantId).get();
+      var data = await firestore.collection("variants").doc(variantId).get();
       variant = Variant.fromMap(data.data() as Map<String, dynamic>);
       isLoading = false;
       notifyListeners();
@@ -152,7 +150,7 @@ class ProductDetailProvider extends ChangeNotifier {
   Future<void> removeProduct(String productId) async {
     try {
       final productRef =
-          FirebaseFirestore.instance.collection('products').doc(productId);
+          FirebaseFirestore.instance.collection('variants').doc(productId);
       await productRef.delete();
       notifyListeners();
     } catch (e) {

@@ -166,7 +166,6 @@ class HomeProductListWithHeading extends StatelessWidget {
                               context, RouteGenerator.detailScreen,
                               arguments: ProductDetailArguments(
                                   categoryId: product.categoryId,
-                                  catgeoryName: product.categoryName,
                                   product: product));
                         },
                         child: Padding(

@@ -26,7 +26,7 @@ class EditProductProvider extends ChangeNotifier {
     }
   }
 
-    void colourValidation(String value) {
+  void colourValidation(String value) {
     if (value.isEmpty && value.length < 2) {
       isColourValidated = false;
       notifyListeners();
@@ -49,10 +49,12 @@ class EditProductProvider extends ChangeNotifier {
   bool isValidated(
       TextEditingController nameController,
       TextEditingController priceController,
-      TextEditingController sellingPriceController,TextEditingController colorController) {
+      TextEditingController sellingPriceController,
+      TextEditingController colorController) {
     if (nameController.text.isNotEmpty &&
         priceController.text.isNotEmpty &&
-        sellingPriceController.text.isNotEmpty&& colorController.text.isNotEmpty) {
+        sellingPriceController.text.isNotEmpty &&
+        colorController.text.isNotEmpty) {
       return true;
     } else {
       return false;
@@ -118,12 +120,13 @@ class EditProductProvider extends ChangeNotifier {
   Future<void> updateProduct(ProductModel product, String productId) async {
     try {
       isLoading = true;
+      notifyListeners();
       final productRef = _firestore.collection("products").doc(productId);
       await productRef.update(product.toMap());
       print("the product is updated");
       isLoading = false;
       notifyListeners();
-      showToast("Product sucessfully updated");
+      // showToast("Product sucessfully updated");
     } catch (e) {
       isLoading = false;
       showToast("Product was not updated");
@@ -134,12 +137,13 @@ class EditProductProvider extends ChangeNotifier {
   Future<void> updateVariant(Variant? variant, String variantId) async {
     try {
       isLoading = true;
+      notifyListeners();
       final productRef = _firestore.collection("variants").doc(variantId);
       await productRef.update(variant!.toMap());
       print("the variant is updated");
       isLoading = false;
       notifyListeners();
-      showToast("variant sucessfully updated");
+      showToast("sucessfully updated");
     } catch (e) {
       isLoading = false;
       showToast("variant was not updated");

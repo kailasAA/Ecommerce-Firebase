@@ -3,12 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:shoe_app/route/argument_model/add_product__arguments.dart';
 import 'package:shoe_app/route/argument_model/product_detail_arguments.dart';
 import 'package:shoe_app/route/argument_model/product_editing_argments.dart';
+import 'package:shoe_app/route/argument_model/search_screen_arguments.dart';
 import 'package:shoe_app/views/add_product/view/add_screen.dart';
 import 'package:shoe_app/views/add_size/view/add_size.dart';
 import 'package:shoe_app/views/add_variant/view/add_variant.dart';
 import 'package:shoe_app/views/detail_page/detail_screen.dart';
 import 'package:shoe_app/views/edit_product/edit_product_screen.dart';
 import 'package:shoe_app/views/main_screen/view/main_screen.dart';
+import 'package:shoe_app/views/search_screen/search_screen.dart';
 import 'package:shoe_app/views/splash/splash.dart';
 
 class RouteGenerator {
@@ -28,6 +30,7 @@ class RouteGenerator {
   static const editScreen = "editProductScreen";
   static const addVariantScreen = "addVariantScreen";
   static const addSizeScreen = "addSizeScreen";
+  static const searchScreen = "searchScreen";
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
     final arguments = settings.arguments;
@@ -68,6 +71,13 @@ class RouteGenerator {
             AddSizeScreen(
               productEditingArgments:
                   settings.arguments as ProductEditingArgments,
+            ));
+      case searchScreen:
+        return buildRoute(
+            settings,
+            SearchScreen(
+              searchScreenArguments:
+                  settings.arguments as SearchScreenArguments,
             ));
       default:
         return buildRoute(settings, const SplashScreen());

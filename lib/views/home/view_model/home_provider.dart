@@ -10,7 +10,13 @@ class HomeProvider extends ChangeNotifier {
   List<ProductModel> productList = [];
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
   List<Variant> variantList = [];
-  
+  List<ProductModel> searchedProducts = [];
+
+  void changeSearchedProducts(List<ProductModel> products) {
+    searchedProducts = products;
+    notifyListeners();
+  }
+
 // to get all the categories
   Future<void> getCategories() async {
     try {
@@ -75,5 +81,4 @@ class HomeProvider extends ChangeNotifier {
       print(e.toString());
     }
   }
-
 }

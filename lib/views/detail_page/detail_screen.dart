@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
-import 'package:shoe_app/common/common_functions/show_toast.dart';
+import 'package:shoe_app/common/common_functions/dialog_box.dart';
 import 'package:shoe_app/common_widgets/neumorphic.dart';
 import 'package:shoe_app/common_widgets/progress_indicators.dart';
 import 'package:shoe_app/gen/assets.gen.dart';
@@ -15,8 +15,9 @@ import 'package:shoe_app/utils/font_pallette.dart';
 import 'package:shoe_app/views/detail_page/models/size_model.dart';
 import 'package:shoe_app/views/detail_page/models/variant_model.dart';
 import 'package:shoe_app/views/detail_page/view_model/product_detail_provider.dart';
+import 'package:shoe_app/views/detail_page/widgets/image_slider.dart';
+import 'package:shoe_app/views/detail_page/widgets/product_detail.dart';
 import 'package:shoe_app/views/home/models/product_model.dart';
-import 'package:shoe_app/views/home/view_model/home_provider.dart';
 import 'package:tuple/tuple.dart';
 
 class DetailScreen extends StatefulWidget {
@@ -336,7 +337,6 @@ class _DetailScreenState extends State<DetailScreen> {
                                         ),
                                       ),
                                     ),
-                                    5.verticalSpace,
                                   ],
                                 ),
                               );
@@ -344,7 +344,24 @@ class _DetailScreenState extends State<DetailScreen> {
                           ),
                         ),
                       ],
-                    )
+                    ),
+                    selectedSize != null
+                        ? Column(
+                            children: [
+                              NeumorphicContainer(
+                                height: 50.w,
+                                width: 120.w,
+                                childWidget: Center(
+                                    child: Text(
+                                  "Reduce Stock",
+                                  style: FontPallette.headingStyle
+                                      .copyWith(fontSize: 13.sp),
+                                )),
+                              ),
+                              15.verticalSpace,
+                            ],
+                          )
+                        : const SizedBox(),
                   ],
                 );
         },
@@ -353,316 +370,3 @@ class _DetailScreenState extends State<DetailScreen> {
   }
 }
 
-class ProductDetailsWidget extends StatefulWidget {
-  const ProductDetailsWidget({
-    super.key,
-    this.variant,
-    this.product,
-    required this.variantList,
-    this.selectedSize,
-  });
-
-  final Variant? variant;
-  final ProductModel? product;
-  final List<Variant> variantList;
-  final SizeModel? selectedSize;
-
-  @override
-  State<ProductDetailsWidget> createState() => _ProductDetailsWidgetState();
-}
-
-class _ProductDetailsWidgetState extends State<ProductDetailsWidget> {
-  late final ProductDetailProvider provider;
-  @override
-  void initState() {
-    provider = context.read<ProductDetailProvider>();
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final selectedSize = widget.selectedSize;
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 15.r),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                widget.product?.name ?? "",
-                style: FontPallette.headingStyle,
-              ),
-              Row(
-                children: [
-                  InkWell(
-                    onTap: () {
-                      Navigator.pushNamed(context, RouteGenerator.editScreen,
-                          arguments: ProductEditingArgments(
-                              variant: widget.variant,
-                              product: widget.product));
-                    },
-                    child: SizedBox(
-                        height: 30.h,
-                        width: 30.h,
-                        child: SvgPicture.asset(Assets.editSvgrepoCom)),
-                  ),
-                  20.horizontalSpace,
-                  InkWell(
-                    onTap: () {
-                      if (widget.variantList.length > 1) {
-                        confirmationDialog(
-                            onTap: () {
-                              context
-                                  .read<ProductDetailProvider>()
-                                  .removeProduct(
-                                      widget.variant?.variantId ?? "")
-                                  .then(
-                                (value) {
-                                  provider
-                                      .getVariants(widget.product?.id ?? "");
-
-                                  provider.getProductDetails(
-                                      widget.product?.id ?? "");
-                                },
-                              );
-                              context.read<HomeProvider>().getAllProducts();
-                              Navigator.of(context).pop();
-                            },
-                            context: context,
-                            buttonText: "Remove",
-                            content: "Do you want to delete this ?");
-                      } else {
-                        showToast("There should be atleast one variant");
-                      }
-                    },
-                    child: SizedBox(
-                        height: 30.h,
-                        width: 30.h,
-                        child: SvgPicture.asset(Assets.bagCrossSvgrepoCom)),
-                  )
-                ],
-              )
-            ],
-          ),
-          5.verticalSpace,
-          Text(
-            "Brand : ${widget.product?.brandName ?? ""}",
-            style: FontPallette.headingStyle
-                .copyWith(fontSize: 15.sp, color: ColorPallette.darkGreyColor),
-          ),
-          5.verticalSpace,
-          Text(
-            "Color : ${widget.variant?.color ?? ""}",
-            style: FontPallette.headingStyle
-                .copyWith(fontSize: 15.sp, color: ColorPallette.darkGreyColor),
-          ),
-          5.verticalSpace,
-          Text(
-            "Selling Price : ₹${selectedSize?.sellingPrice ?? ""}",
-            style: FontPallette.headingStyle
-                .copyWith(fontSize: 15.sp, color: ColorPallette.darkGreyColor),
-          ),
-          5.verticalSpace,
-          Text(
-            "Recieving Price : ₹${selectedSize?.receivingPrice ?? ""}",
-            style: FontPallette.headingStyle
-                .copyWith(fontSize: 15.sp, color: ColorPallette.darkGreyColor),
-          ),
-          5.verticalSpace,
-          Text(
-            "Discount Price : ₹${selectedSize?.discountPrice ?? ""}",
-            style: FontPallette.headingStyle
-                .copyWith(fontSize: 15.sp, color: ColorPallette.darkGreyColor),
-          ),
-          5.verticalSpace,
-          Text(
-            "Stock : ${selectedSize?.stock ?? ""}",
-            style: FontPallette.headingStyle
-                .copyWith(fontSize: 15.sp, color: ColorPallette.darkGreyColor),
-          )
-        ],
-      ),
-    );
-  }
-}
-
-class ImageSlider extends StatefulWidget {
-  const ImageSlider({super.key, required this.variant});
-  final Variant? variant;
-  @override
-  State<ImageSlider> createState() => _ImageSliderState();
-}
-
-class _ImageSliderState extends State<ImageSlider> {
-  int page = 0;
-  int nextPage = 0;
-  final PageController pageController =
-      PageController(initialPage: 0, viewportFraction: 1);
-  @override
-  void initState() {
-    WidgetsBinding.instance.addPostFrameCallback(
-      (timeStamp) {
-        _listenController();
-        startAutoScroll();
-      },
-    );
-    super.initState();
-  }
-
-  void _listenController() {
-    pageController.addListener(() {
-      page = pageController.page!.round();
-      nextPage = page + 1;
-    });
-  }
-
-  void startAutoScroll() {
-    Future.delayed(const Duration(milliseconds: 300)).then(
-      (value) {
-        if (pageController.hasClients && mounted) {
-          nextPage = page + 1;
-          Future.delayed(const Duration(
-            seconds: 2,
-          )).then(
-            (value) {
-              if (pageController.hasClients && mounted) {
-                pageController
-                    .animateToPage(nextPage,
-                        duration: const Duration(milliseconds: 300),
-                        curve: Curves.linearToEaseOut)
-                    .then(
-                      (value) => startAutoScroll(),
-                    );
-              }
-            },
-          );
-        }
-      },
-    );
-  }
-
-  @override
-  void dispose() {
-    pageController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return (widget.variant?.imageUrlList ?? []).isNotEmpty
-        ? SizedBox(
-            height: 270.h,
-            width: double.infinity,
-            child: PageView.builder(
-              scrollDirection: Axis.horizontal,
-              controller: pageController,
-              itemBuilder: (context, index) {
-                final currentIndex =
-                    index % (widget.variant?.imageUrlList ?? []).length;
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  child: NeumorphicContainer(
-                    blurRadius: 10,
-                    offset: const Offset(0, 2),
-                    height: 240.h,
-                    width: 330.w,
-                    childWidget: SizedBox(
-                      height: 130.w,
-                      child: ClipRRect(
-                        borderRadius: const BorderRadius.vertical(
-                          top: Radius.circular(12),
-                        ),
-                        child: CachedNetworkImage(
-                          imageUrl:
-                              widget.variant?.imageUrlList?[currentIndex] ?? "",
-                          imageBuilder: (context, imageProvider) {
-                            return Container(
-                              width: double.infinity,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                                image: DecorationImage(
-                                  image: imageProvider,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            );
-                          },
-                          placeholder: (context, url) => Center(
-                              child: LoadingAnimation(
-                            size: 20.r,
-                          )),
-                          errorWidget: (context, url, error) =>
-                              const Icon(Icons.error),
-                        ),
-                      ),
-                    ),
-                  ),
-                );
-              },
-            ),
-          )
-        : const SizedBox();
-  }
-}
-
-void confirmationDialog(
-    {required BuildContext context,
-    String? heading,
-    String? content,
-    required buttonText,
-    void Function()? onTap}) {
-  showDialog(
-    context: context,
-    builder: (context) {
-      return SizedBox(
-        height: 30.h,
-        child: Padding(
-          padding: EdgeInsets.all(10.r),
-          child: AlertDialog(
-            // title: Text(heading ?? ""),
-            content: Text(
-              content ?? "",
-              style: FontPallette.headingStyle.copyWith(fontSize: 15.sp),
-            ),
-
-            actions: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  GestureDetector(
-                      onTap: onTap,
-                      child: NeumorphicContainer(
-                          height: 40.h,
-                          width: 100.w,
-                          childWidget: Center(
-                              child: Text(
-                            buttonText,
-                            style: FontPallette.headingStyle
-                                .copyWith(fontSize: 13.sp),
-                          )))),
-                  20.horizontalSpace,
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.of(context).pop();
-                    },
-                    child: NeumorphicContainer(
-                        height: 40.h,
-                        width: 100.w,
-                        childWidget: Center(
-                            child: Text(
-                          'Cancel',
-                          style: FontPallette.headingStyle
-                              .copyWith(fontSize: 13.sp),
-                        ))),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      );
-    },
-  );
-}

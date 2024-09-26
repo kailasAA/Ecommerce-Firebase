@@ -42,6 +42,7 @@ class Assets {
       'assets/refresh-right-square-svgrepo-com.svg';
   static const String saveRemoveSvgrepoCom =
       'assets/save-remove-svgrepo-com.svg';
+  static const String searchAltSvgrepoCom = 'assets/search-alt-svgrepo-com.svg';
   static const AssetGenImage splash = AssetGenImage('assets/splash.jpg');
   static const String supermarketGiftGiftSvgrepoCom =
       'assets/supermarket-gift-gift-svgrepo-com.svg';

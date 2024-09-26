@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'package:shoe_app/common_widgets/neumorphic.dart';
 import 'package:shoe_app/common_widgets/progress_indicators.dart';
+import 'package:shoe_app/gen/assets.gen.dart';
+import 'package:shoe_app/route/argument_model/search_screen_arguments.dart';
+import 'package:shoe_app/route/route_generator.dart';
 import 'package:shoe_app/utils/color_pallette.dart';
 import 'package:shoe_app/utils/font_pallette.dart';
 import 'package:shoe_app/views/categories/models/category_model.dart';
@@ -56,13 +60,33 @@ class _HomeScreenState extends State<HomeScreen> {
                             40.verticalSpace,
                             Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child: SizedBox(
-                                height: 30.h,
-                                child: Text(
-                                  "Welcome Back",
-                                  style: FontPallette.headingStyle.copyWith(
-                                      color: ColorPallette.blackColor),
-                                ),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  SizedBox(
+                                    height: 30.h,
+                                    child: Text(
+                                      "Welcome Back",
+                                      style: FontPallette.headingStyle.copyWith(
+                                          color: ColorPallette.blackColor),
+                                    ),
+                                  ),
+                                  InkWell(
+                                    splashColor: Colors.transparent,
+                                    onTap: () {
+                                      Navigator.pushNamed(
+                                          context, RouteGenerator.searchScreen,
+                                          arguments: SearchScreenArguments(
+                                              productList: productList));
+                                    },
+                                    child: SizedBox(
+                                        height: 35.h,
+                                        width: 35.w,
+                                        child: SvgPicture.asset(
+                                            Assets.searchAltSvgrepoCom)),
+                                  )
+                                ],
                               ),
                             ),
                             10.verticalSpace,
@@ -71,6 +95,33 @@ class _HomeScreenState extends State<HomeScreen> {
                               blurRadius: 15,
                               height: 200.h,
                               width: 320.w,
+                              childWidget: Center(
+                                child: Padding(
+                                  padding: EdgeInsets.all(20.r),
+                                  child: Row(
+                                    children: [
+                                      SizedBox(
+                                        height: 100.h,
+                                        width: 100.w,
+                                        child: SvgPicture.asset(Assets
+                                            .supermarketGiftGiftSvgrepoCom),
+                                      ),
+                                      15.horizontalSpace,
+                                      Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            "Total Products: ${productList.length}",
+                                            style: FontPallette.headingStyle
+                                                .copyWith(fontSize: 15.sp),
+                                          )
+                                        ],
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ),
                             ),
                             30.verticalSpace,
                           ],

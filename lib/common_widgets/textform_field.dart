@@ -66,6 +66,7 @@ class NuemorphicTextField extends StatelessWidget {
               cursorColor: ColorPallette.greyColor,
               cursorWidth: 3,
               decoration: InputDecoration(
+                prefixIcon: prefixWidget,
                 errorBorder: InputBorder.none,
                 border: InputBorder.none,
                 contentPadding:

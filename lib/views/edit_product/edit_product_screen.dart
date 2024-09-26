@@ -15,7 +15,6 @@ import 'package:shoe_app/views/detail_page/models/variant_model.dart';
 import 'package:shoe_app/views/detail_page/view_model/product_detail_provider.dart';
 import 'package:shoe_app/views/edit_product/view_model/edit_product_provider.dart';
 import 'package:shoe_app/views/home/models/product_model.dart';
-import 'package:shoe_app/views/home/view_model/home_provider.dart';
 
 class EditProductScreen extends StatefulWidget {
   const EditProductScreen({
@@ -213,7 +212,6 @@ class _EditProductScreenState extends State<EditProductScreen> {
                               : SizedBox(
                                   height: 20.h,
                                 ),
-
                           NuemorphicTextField(
                             onChanged: (value) {
                               if (value.isEmpty || value.length < 2) {
@@ -241,7 +239,6 @@ class _EditProductScreenState extends State<EditProductScreen> {
                               : SizedBox(
                                   height: 20.h,
                                 ),
-
                           NuemorphicTextField(
                             onChanged: (value) {
                               if (value.isEmpty || value.length < 2) {
@@ -298,12 +295,12 @@ class _EditProductScreenState extends State<EditProductScreen> {
                             .getProductDetails(variant?.productId ?? "");
                         context
                             .read<ProductDetailProvider>()
-                            .getVariantDetails(variant?.variantId ?? "");
+                            .getVariantDetails(variant?.variantId ?? "",variant);
                         context
                             .read<ProductDetailProvider>()
-                            .getVariants(product?.id ?? "");
+                            .getVariants(variant?.productId ?? "");
 
-                        context.read<HomeProvider>().getAllProducts();
+                        // context.read<HomeProvider>().getAllProducts();
                       },
                       child: NeumorphicContainer(
                         height: 50.h,

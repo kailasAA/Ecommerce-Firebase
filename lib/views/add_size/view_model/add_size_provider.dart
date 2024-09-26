@@ -11,6 +11,7 @@ class AddSizeProvider extends ChangeNotifier {
   bool isSellingPriceValidated = true;
   bool isDiscountPriceValidated = true;
 
+// validations
   void receivingPriceValidation(String value) {
     if (value.isEmpty && value.length < 2) {
       isRecievingPriceValidated = false;
@@ -20,7 +21,6 @@ class AddSizeProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
-
   void sellingPriceValidation(String value) {
     if (value.isEmpty && value.length < 2) {
       isSellingPriceValidated = false;
@@ -30,7 +30,6 @@ class AddSizeProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
-
   void discountPriceValidation(String value) {
     if (value.isEmpty && value.length < 2) {
       isDiscountPriceValidated = false;
@@ -40,7 +39,6 @@ class AddSizeProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
-
   void sizeValidation(String value) {
     if (value.isEmpty && value.length < 2) {
       isSizeValidated = false;
@@ -50,7 +48,6 @@ class AddSizeProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
-
   void stockValidation(String value) {
     if (value.isEmpty && value.length < 2) {
       isStockValidated = false;
@@ -61,6 +58,8 @@ class AddSizeProvider extends ChangeNotifier {
     }
   }
 
+  
+// to add a new size
   Future<void> addSize(
       {required String recievingPrice,
       required String sellingPrice,

@@ -4,5 +4,8 @@ import 'package:shoe_app/views/home/models/product_model.dart';
 class ProductEditingArgments {
   ProductModel? product;
   Variant? variant;
-  ProductEditingArgments({required this.variant, required this.product});
+  ProductEditingArgments({
+    required this.variant,
+    required this.product,
+  });
 }

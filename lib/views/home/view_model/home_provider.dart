@@ -10,7 +10,8 @@ class HomeProvider extends ChangeNotifier {
   List<ProductModel> productList = [];
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
   List<Variant> variantList = [];
-
+  
+// to get all the categories
   Future<void> getCategories() async {
     try {
       isLoading = true;
@@ -31,6 +32,7 @@ class HomeProvider extends ChangeNotifier {
     }
   }
 
+// to get all the products
   Future<void> getAllProducts() async {
     try {
       isLoading = true;
@@ -44,7 +46,6 @@ class HomeProvider extends ChangeNotifier {
       isLoading = false;
       notifyListeners();
       print("product fetched successfully");
-      print(productList);
     } catch (e) {
       isLoading = false;
       notifyListeners();
@@ -52,6 +53,7 @@ class HomeProvider extends ChangeNotifier {
     }
   }
 
+// to get all the variants
   Future<void> getAllVariants() async {
     try {
       isLoading = true;
@@ -64,7 +66,6 @@ class HomeProvider extends ChangeNotifier {
       ).toList();
       variantList = [];
       variantList = allVariants;
-      print(variantList);
       isLoading = false;
       notifyListeners();
       print("variant detail fetched successfully");
@@ -74,4 +75,5 @@ class HomeProvider extends ChangeNotifier {
       print(e.toString());
     }
   }
+
 }

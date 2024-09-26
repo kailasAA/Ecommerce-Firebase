@@ -7,7 +7,7 @@ import 'package:shoe_app/utils/color_pallette.dart';
 import 'package:shoe_app/utils/font_pallette.dart';
 import 'package:shoe_app/views/categories/view/categories.dart';
 import 'package:shoe_app/views/home/view/home_screen.dart';
-import 'package:shoe_app/views/main_screen%20copy/viemodel/main_screen_provider.dart';
+import 'package:shoe_app/views/main_screen/viemodel/main_screen_provider.dart';
 import 'package:shoe_app/views/stocks/stocks_screen.dart';
 
 class MainScreen extends StatelessWidget {

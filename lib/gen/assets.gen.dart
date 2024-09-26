@@ -23,6 +23,7 @@ class Assets {
       'assets/arrow-circle-right-svgrepo-com.svg';
   static const String backspaceSvgrepoCom = 'assets/backspace-svgrepo-com.svg';
   static const String bagCrossSvgrepoCom = 'assets/bag-cross-svgrepo-com.svg';
+  static const String cartsCartSvgrepoCom = 'assets/carts-cart-svgrepo-com.svg';
   static const String editSvgrepoCom = 'assets/edit-svgrepo-com.svg';
   static const String galleryAddSvgrepoCom =
       'assets/gallery-add-svgrepo-com.svg';
@@ -31,11 +32,21 @@ class Assets {
   static const String heartSvgrepoCom = 'assets/heart-svgrepo-com.svg';
   static const String home1SvgrepoCom = 'assets/home-1-svgrepo-com.svg';
   static const String home2SvgrepoCom = 'assets/home-2-svgrepo-com.svg';
+  static const String labelPriceSvgrepoCom =
+      'assets/label-price-svgrepo-com.svg';
+  static const String noteNotepadSvgrepoCom =
+      'assets/note-notepad-svgrepo-com.svg';
+  static const String productsProductSvgrepoCom =
+      'assets/products-product-svgrepo-com.svg';
   static const String refreshRightSquareSvgrepoCom =
       'assets/refresh-right-square-svgrepo-com.svg';
   static const String saveRemoveSvgrepoCom =
       'assets/save-remove-svgrepo-com.svg';
   static const AssetGenImage splash = AssetGenImage('assets/splash.jpg');
+  static const String supermarketGiftGiftSvgrepoCom =
+      'assets/supermarket-gift-gift-svgrepo-com.svg';
+  static const String supermarketTagSvgrepoCom =
+      'assets/supermarket-tag-svgrepo-com.svg';
 }
 
 class AssetGenImage {

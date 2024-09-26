@@ -1,10 +1,10 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:shoe_app/common/common_functions/show_alertdialougue.dart';
 import 'package:shoe_app/utils/font_pallette.dart';
 import 'package:shoe_app/views/categories/view_model.dart/catgeory_provider.dart';
+import 'package:shoe_app/views/home/view_model/home_provider.dart';
 
 void showPopup(BuildContext context, int index, Offset tapPosition,
     String categoryId, String categoryName) {
@@ -66,8 +66,18 @@ void showPopup(BuildContext context, int index, Offset tapPosition,
         child: Center(
             child: GestureDetector(
                 onTap: () {
+                  final homeProvider = context.read<HomeProvider>();
+                  final categoryProvider = context.read<CatgeoryProvider>();
                   Navigator.pop(context);
-                  context.read<CatgeoryProvider>().deleteCategory(categoryId);
+                  context
+                      .read<CatgeoryProvider>()
+                      .deleteCategory(categoryId)
+                      .then(
+                    (value) {
+                      categoryProvider.getCategories();
+                      homeProvider.getAllVariants();
+                    },
+                  );
                 },
                 child: Padding(
                   padding: EdgeInsets.all(8.r),
@@ -86,7 +96,6 @@ void showPopup(BuildContext context, int index, Offset tapPosition,
       ),
     ],
   ).then((value) {
-    if (value != null) {
-    }
+    if (value != null) {}
   });
 }

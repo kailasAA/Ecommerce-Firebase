@@ -8,7 +8,7 @@ import 'package:shoe_app/views/add_size/view/add_size.dart';
 import 'package:shoe_app/views/add_variant/view/add_variant.dart';
 import 'package:shoe_app/views/detail_page/detail_screen.dart';
 import 'package:shoe_app/views/edit_product/edit_product_screen.dart';
-import 'package:shoe_app/views/main_screen%20copy/view/main_screen.dart';
+import 'package:shoe_app/views/main_screen/view/main_screen.dart';
 import 'package:shoe_app/views/splash/splash.dart';
 
 class RouteGenerator {

@@ -12,6 +12,7 @@ import 'package:shoe_app/route/argument_model/product_editing_argments.dart';
 import 'package:shoe_app/route/route_generator.dart';
 import 'package:shoe_app/utils/color_pallette.dart';
 import 'package:shoe_app/utils/font_pallette.dart';
+import 'package:shoe_app/views/detail_page/models/size_model.dart';
 import 'package:shoe_app/views/detail_page/models/variant_model.dart';
 import 'package:shoe_app/views/detail_page/view_model/product_detail_provider.dart';
 import 'package:shoe_app/views/home/models/product_model.dart';
@@ -28,16 +29,22 @@ class DetailScreen extends StatefulWidget {
 }
 
 class _DetailScreenState extends State<DetailScreen> {
+  late final ProductDetailProvider provider;
+
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback(
       (timeStamp) {
-        context
-            .read<ProductDetailProvider>()
-            .getVariants(widget.productDetailArguments.product?.id ?? "");
-        context
-            .read<ProductDetailProvider>()
-            .getProductDetails(widget.productDetailArguments.product?.id ?? "");
+        provider = context.read<ProductDetailProvider>();
+        provider
+            .getVariants(widget.productDetailArguments.product.id ?? "")
+            .then(
+          (value) {
+            provider.getSizes();
+            provider.getProductDetails(
+                widget.productDetailArguments.product.id ?? "");
+          },
+        );
       },
     );
 
@@ -48,6 +55,7 @@ class _DetailScreenState extends State<DetailScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        surfaceTintColor: Colors.transparent,
         leading: InkWell(
             onTap: () {
               Navigator.of(context).pop();
@@ -55,24 +63,29 @@ class _DetailScreenState extends State<DetailScreen> {
             child: const Icon(Icons.arrow_back)),
         backgroundColor: ColorPallette.scaffoldBgColor,
         title: Text(
-          widget.productDetailArguments.product?.name ?? "Product Details",
+          widget.productDetailArguments.product.name ?? "Product Details",
           style: FontPallette.headingStyle,
         ),
       ),
       backgroundColor: ColorPallette.scaffoldBgColor,
-      body: Selector<ProductDetailProvider,
-          Tuple4<bool, ProductModel?, List<Variant>, Variant?>>(
-        selector: (p0, detailProvider) => Tuple4(
+      body: Selector<
+          ProductDetailProvider,
+          Tuple6<bool, ProductModel?, List<Variant>, Variant?, List<SizeModel>,
+              SizeModel?>>(
+        selector: (p0, detailProvider) => Tuple6(
             detailProvider.isLoading,
             detailProvider.product,
             detailProvider.variantList,
-            detailProvider.variant),
+            detailProvider.variant,
+            detailProvider.variantSizes,
+            detailProvider.selectedSize),
         builder: (context, value, child) {
           final product = value.item2;
           final isLoading = value.item1;
           final variantList = value.item3;
           final variant = value.item4;
-
+          final sizeList = value.item5;
+          final selectedSize = value.item6;
           return isLoading
               ? const LoadingAnimation()
               : ListView(
@@ -82,6 +95,7 @@ class _DetailScreenState extends State<DetailScreen> {
                     ),
                     const SizedBox(height: 20),
                     ProductDetailsWidget(
+                      selectedSize: selectedSize,
                       variantList: variantList,
                       variant: variant,
                       product: product,
@@ -143,10 +157,11 @@ class _DetailScreenState extends State<DetailScreen> {
                                   children: [
                                     InkWell(
                                       onTap: () {
-                                        context
-                                            .read<ProductDetailProvider>()
-                                            .getVariantDetails(
-                                                variantAtIndex.variantId ?? "");
+                                        if (!isVariant) {
+                                          provider.getVariantDetails(
+                                              variantAtIndex.variantId ?? "",
+                                              variantAtIndex);
+                                        }
                                       },
                                       child: Container(
                                         height: 80.h,
@@ -194,29 +209,82 @@ class _DetailScreenState extends State<DetailScreen> {
                                 "Sizes",
                                 style: FontPallette.headingStyle,
                               ),
-                              InkWell(
-                                onTap: () {
-                                  Navigator.pushNamed(
-                                      context, RouteGenerator.addSizeScreen,
-                                      arguments: ProductEditingArgments(
-                                          variant: variant, product: product));
-                                },
-                                child: Container(
-                                  height: 30.h,
-                                  width: 70.w,
-                                  decoration: BoxDecoration(
-                                    color: ColorPallette.blackColor,
-                                    borderRadius: BorderRadius.circular(25),
+                              Row(
+                                children: [
+                                  Row(
+                                    children: [
+                                      InkWell(
+                                        onTap: () {
+                                          Navigator.pushNamed(context,
+                                              RouteGenerator.addSizeScreen,
+                                              arguments: ProductEditingArgments(
+                                                  variant: variant,
+                                                  product: product));
+                                        },
+                                        child: SizedBox(
+                                            height: 25.h,
+                                            width: 25.h,
+                                            child: SvgPicture.asset(
+                                                Assets.editSvgrepoCom)),
+                                      ),
+                                      20.horizontalSpace,
+                                      InkWell(
+                                        onTap: () {
+                                          confirmationDialog(
+                                              onTap: () {
+                                                provider
+                                                    .removeSize(
+                                                        selectedSize?.sizeId ??
+                                                            "")
+                                                    .then(
+                                                  (value) {
+                                                    Navigator.pop(context);
+                                                    provider.getSizes();
+                                                  },
+                                                );
+                                              },
+                                              context: context,
+                                              buttonText: "Remove",
+                                              content:
+                                                  "Do you want to delete this ?");
+                                        },
+                                        child: SizedBox(
+                                            height: 25.h,
+                                            width: 25.h,
+                                            child: SvgPicture.asset(
+                                                Assets.bagCrossSvgrepoCom)),
+                                      )
+                                    ],
                                   ),
-                                  child: Center(
-                                    child: Text(
-                                      "Add New",
-                                      style: FontPallette.headingStyle.copyWith(
-                                          fontSize: 10.sp,
-                                          color: ColorPallette.whiteColor),
+                                  10.horizontalSpace,
+                                  InkWell(
+                                    onTap: () {
+                                      Navigator.pushNamed(
+                                          context, RouteGenerator.addSizeScreen,
+                                          arguments: ProductEditingArgments(
+                                              variant: variant,
+                                              product: product));
+                                    },
+                                    child: Container(
+                                      height: 30.h,
+                                      width: 70.w,
+                                      decoration: BoxDecoration(
+                                        color: ColorPallette.blackColor,
+                                        borderRadius: BorderRadius.circular(25),
+                                      ),
+                                      child: Center(
+                                        child: Text(
+                                          "Add New",
+                                          style: FontPallette.headingStyle
+                                              .copyWith(
+                                                  fontSize: 10.sp,
+                                                  color:
+                                                      ColorPallette.whiteColor),
+                                        ),
+                                      ),
                                     ),
                                   ),
-                                ),
+                                ],
                               ),
                             ],
                           ),
@@ -226,34 +294,53 @@ class _DetailScreenState extends State<DetailScreen> {
                           height: 70.h,
                           child: ListView.builder(
                             shrinkWrap: true,
-                            itemCount: 3,
+                            itemCount: sizeList.length,
                             scrollDirection: Axis.horizontal,
-                            itemBuilder: (context, index) => Padding(
-                              padding: EdgeInsets.all(10.r),
-                              child: Column(
-                                children: [
-                                  Container(
-                                    height: 35.h,
-                                    width: 80.w,
-                                    decoration: BoxDecoration(
-                                      color: ColorPallette.greyColor,
-                                      borderRadius: BorderRadius.circular(25),
-                                    ),
-                                    child: Center(
-                                      child: Text(
-                                        "size",
-                                        style: FontPallette.subtitleStyle
-                                            .copyWith(
-                                                fontSize: 12.sp,
-                                                color:
-                                                    ColorPallette.whiteColor),
+                            itemBuilder: (context, index) {
+                              final isSelectedSize =
+                                  selectedSize == sizeList[index];
+
+                              final size = sizeList[index];
+                              return Padding(
+                                padding: EdgeInsets.all(10.r),
+                                child: Column(
+                                  children: [
+                                    InkWell(
+                                      onTap: () {
+                                        if (selectedSize != size) {
+                                          provider.selectSize(size);
+                                        }
+                                      },
+                                      child: Container(
+                                        height: 35.h,
+                                        width: 80.w,
+                                        decoration: BoxDecoration(
+                                          border: Border.all(
+                                              color: isSelectedSize
+                                                  ? ColorPallette.blackColor
+                                                  : ColorPallette.greyColor,
+                                              width: isSelectedSize ? 3 : 1),
+                                          color: ColorPallette.whiteColor,
+                                          borderRadius:
+                                              BorderRadius.circular(25),
+                                        ),
+                                        child: Center(
+                                          child: Text(
+                                            size.size,
+                                            style: FontPallette.subtitleStyle
+                                                .copyWith(
+                                                    fontSize: 12.sp,
+                                                    color: ColorPallette
+                                                        .blackColor),
+                                          ),
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  5.verticalSpace,
-                                ],
-                              ),
-                            ),
+                                    5.verticalSpace,
+                                  ],
+                                ),
+                              );
+                            },
                           ),
                         ),
                       ],
@@ -266,20 +353,35 @@ class _DetailScreenState extends State<DetailScreen> {
   }
 }
 
-class ProductDetailsWidget extends StatelessWidget {
+class ProductDetailsWidget extends StatefulWidget {
   const ProductDetailsWidget({
     super.key,
     this.variant,
     this.product,
     required this.variantList,
+    this.selectedSize,
   });
 
   final Variant? variant;
   final ProductModel? product;
   final List<Variant> variantList;
+  final SizeModel? selectedSize;
+
+  @override
+  State<ProductDetailsWidget> createState() => _ProductDetailsWidgetState();
+}
+
+class _ProductDetailsWidgetState extends State<ProductDetailsWidget> {
+  late final ProductDetailProvider provider;
+  @override
+  void initState() {
+    provider = context.read<ProductDetailProvider>();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
+    final selectedSize = widget.selectedSize;
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 15.r),
       child: Column(
@@ -289,7 +391,7 @@ class ProductDetailsWidget extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                product?.name ?? "",
+                widget.product?.name ?? "",
                 style: FontPallette.headingStyle,
               ),
               Row(
@@ -298,7 +400,8 @@ class ProductDetailsWidget extends StatelessWidget {
                     onTap: () {
                       Navigator.pushNamed(context, RouteGenerator.editScreen,
                           arguments: ProductEditingArgments(
-                              variant: variant, product: product));
+                              variant: widget.variant,
+                              product: widget.product));
                     },
                     child: SizedBox(
                         height: 30.h,
@@ -308,23 +411,24 @@ class ProductDetailsWidget extends StatelessWidget {
                   20.horizontalSpace,
                   InkWell(
                     onTap: () {
-                      if (variantList.length > 1) {
+                      if (widget.variantList.length > 1) {
                         confirmationDialog(
                             onTap: () {
                               context
                                   .read<ProductDetailProvider>()
-                                  .removeProduct(variant?.variantId ?? "");
-                              context
-                                  .read<ProductDetailProvider>()
-                                  .getVariants(product?.id ?? "");
-                              context.read<HomeProvider>().getAllProducts();
-                              context
-                                  .read<ProductDetailProvider>()
-                                  .getProductDetails(product?.id ?? "");
+                                  .removeProduct(
+                                      widget.variant?.variantId ?? "")
+                                  .then(
+                                (value) {
+                                  provider
+                                      .getVariants(widget.product?.id ?? "");
 
+                                  provider.getProductDetails(
+                                      widget.product?.id ?? "");
+                                },
+                              );
+                              context.read<HomeProvider>().getAllProducts();
                               Navigator.of(context).pop();
-                              // Navigator.pushNamed(
-                              //     context, RouteGenerator.mainScreen);
                             },
                             context: context,
                             buttonText: "Remove",
@@ -344,22 +448,40 @@ class ProductDetailsWidget extends StatelessWidget {
           ),
           5.verticalSpace,
           Text(
-            "Brand : ${product?.brandName ?? ""}",
+            "Brand : ${widget.product?.brandName ?? ""}",
             style: FontPallette.headingStyle
                 .copyWith(fontSize: 15.sp, color: ColorPallette.darkGreyColor),
           ),
           5.verticalSpace,
           Text(
-            "Color : ${variant?.color ?? ""}",
+            "Color : ${widget.variant?.color ?? ""}",
             style: FontPallette.headingStyle
                 .copyWith(fontSize: 15.sp, color: ColorPallette.darkGreyColor),
           ),
-          // 5.verticalSpace,
-          // Text(
-          //   "Selling Price : ₹${product?.sellingPrice ?? ""}",
-          //   style: FontPallette.headingStyle
-          //       .copyWith(fontSize: 16.sp, color: ColorPallette.darkGreyColor),
-          // )
+          5.verticalSpace,
+          Text(
+            "Selling Price : ₹${selectedSize?.sellingPrice ?? ""}",
+            style: FontPallette.headingStyle
+                .copyWith(fontSize: 15.sp, color: ColorPallette.darkGreyColor),
+          ),
+          5.verticalSpace,
+          Text(
+            "Recieving Price : ₹${selectedSize?.receivingPrice ?? ""}",
+            style: FontPallette.headingStyle
+                .copyWith(fontSize: 15.sp, color: ColorPallette.darkGreyColor),
+          ),
+          5.verticalSpace,
+          Text(
+            "Discount Price : ₹${selectedSize?.discountPrice ?? ""}",
+            style: FontPallette.headingStyle
+                .copyWith(fontSize: 15.sp, color: ColorPallette.darkGreyColor),
+          ),
+          5.verticalSpace,
+          Text(
+            "Stock : ${selectedSize?.stock ?? ""}",
+            style: FontPallette.headingStyle
+                .copyWith(fontSize: 15.sp, color: ColorPallette.darkGreyColor),
+          )
         ],
       ),
     );

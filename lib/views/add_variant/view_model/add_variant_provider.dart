@@ -15,6 +15,7 @@ class AddVariantProvider extends ChangeNotifier {
   TextEditingController colorController = TextEditingController();
   bool isColorValidated = true;
 
+// to validate text field
   void colorValidation(String value) {
     if (value.isEmpty && value.length < 2) {
       isColorValidated = false;
@@ -25,6 +26,7 @@ class AddVariantProvider extends ChangeNotifier {
     }
   }
 
+// to clear data in controller and list
   void clearData() {
     colorController.clear();
     pickedXfileList = [];
@@ -32,6 +34,7 @@ class AddVariantProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+//  to add a new variant
   Future<void> addProductVariant(
       String variantColour, String categoryId, String productId) async {
     try {
@@ -59,6 +62,7 @@ class AddVariantProvider extends ChangeNotifier {
     }
   }
 
+//  to select multiple images
   Future<void> selectMultipleImage() async {
     final list = await pickMultipleImage();
 

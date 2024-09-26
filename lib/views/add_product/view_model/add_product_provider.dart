@@ -11,24 +11,17 @@ class AddProductProvider extends ChangeNotifier {
   List<File> pickedfileList = [];
   TextEditingController nameController = TextEditingController();
   TextEditingController brandController = TextEditingController();
-  // TextEditingController priceController = TextEditingController();
-  // TextEditingController sellingPriceController = TextEditingController();
   TextEditingController colorController = TextEditingController();
   String selectedCategory = "";
   bool isColorValidated = true;
   bool isNameValidated = true;
-  // bool isPriceValidated = true;
-  // bool isSellingPriceValidated = true;
   bool isBrandValidated = true;
   bool isLoading = false;
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
 // to add baseProduct
-
   Future<void> addBaseProduct(
       {required String name,
-      // required String price,
-      // required String sellingPrice,
       required String categoryId,
       required String categoryName,
       required String brandName,
@@ -68,22 +61,20 @@ class AddProductProvider extends ChangeNotifier {
     }
   }
 
+// to clear the lists and the controllers
   void clearControllers() {
     nameController.clear();
-    // priceController.clear();
-    // sellingPriceController.clear();
     colorController.clear();
     brandController.clear();
     pickedXfileList = [];
     pickedfileList = [];
     pickedXfileList = [];
     isNameValidated = true;
-    // isPriceValidated = true;
-    // isSellingPriceValidated = true;
     isColorValidated = true;
     notifyListeners();
   }
 
+// validations
   void nameValidation(String value) {
     if (value.isEmpty && value.length < 2) {
       isNameValidated = false;
@@ -93,7 +84,6 @@ class AddProductProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
-
   void brandValidation(String value) {
     if (value.isEmpty && value.length < 2) {
       isBrandValidated = false;
@@ -103,7 +93,6 @@ class AddProductProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
-
   void colorValidation(String value) {
     if (value.isEmpty && value.length < 2) {
       isColorValidated = false;
@@ -113,12 +102,9 @@ class AddProductProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
-
   bool isValidated() {
     if (nameController.text.isNotEmpty &&
     brandController.text.isNotEmpty&&
-        // priceController.text.isNotEmpty &&
-        // sellingPriceController.text.isNotEmpty &&
         colorController.text.isNotEmpty) {
       return true;
     } else {
@@ -126,31 +112,15 @@ class AddProductProvider extends ChangeNotifier {
     }
   }
 
-  // void priceValidation(String value) {
-  //   if (value.isEmpty && value.length < 2) {
-  //     isPriceValidated = false;
-  //     notifyListeners();
-  //   } else {
-  //     isPriceValidated = true;
-  //     notifyListeners();
-  //   }
-  // }
 
-  // void sellingPriceValidation(String value) {
-  //   if (value.isEmpty && value.length < 2) {
-  //     isSellingPriceValidated = false;
-  //     notifyListeners();
-  //   } else {
-  //     isSellingPriceValidated = true;
-  //     notifyListeners();
-  //   }
-  // }
 
+// to update selected category
   void changeSelectedCategory(String category) {
     selectedCategory = category;
     notifyListeners();
   }
 
+// to select multiple images
   Future<void> selectMultipleImage() async {
     final list = await pickMultipleImage();
 
@@ -162,6 +132,7 @@ class AddProductProvider extends ChangeNotifier {
   }
 }
 
+// to upload multiple images to firebase 
 Future<List<String?>> uploadImageToFirebase(List<XFile?> imageFiles) async {
   List<String> downloadUrls = [];
   for (var imageFile in imageFiles) {

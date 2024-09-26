@@ -1,23 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
-import 'package:shoe_app/common_widgets/neumorphic.dart';
 import 'package:shoe_app/common_widgets/progress_indicators.dart';
-import 'package:shoe_app/common_widgets/textform_field.dart';
 import 'package:shoe_app/route/argument_model/product_editing_argments.dart';
 import 'package:shoe_app/utils/color_pallette.dart';
 import 'package:shoe_app/utils/font_pallette.dart';
+import 'package:shoe_app/views/add_size/view/widgets/add_size_textfields.dart';
 import 'package:shoe_app/views/add_size/view_model/add_size_provider.dart';
-import 'package:shoe_app/views/add_variant/view_model/add_variant_provider.dart';
 import 'package:shoe_app/views/detail_page/view_model/product_detail_provider.dart';
-import 'package:shoe_app/views/home/view_model/home_provider.dart';
 import 'package:tuple/tuple.dart';
 
 class AddSizeScreen extends StatelessWidget {
   const AddSizeScreen({super.key, required this.productEditingArgments});
   final ProductEditingArgments productEditingArgments;
+
   @override
   Widget build(BuildContext context) {
+    // final homeProvider = context.read<HomeProvider>();
+    final detailPageProvider = context.read<ProductDetailProvider>();
+    final addSizeProvider = context.read<AddSizeProvider>();
     final TextEditingController sizeEditingController = TextEditingController();
     final TextEditingController recievingPriceEditingController =
         TextEditingController();
@@ -58,183 +58,23 @@ class AddSizeScreen extends StatelessWidget {
           ),
           body: isLoading
               ? const LoadingAnimation()
-              : Padding(
-                  padding: EdgeInsets.all(15.r),
-                  child: ListView(
-                    children: [
-                      NuemorphicTextField(
-                        onChanged: (value) {
-                          if (value.isEmpty || value.length < 2) {
-                            context
-                                .read<AddSizeProvider>()
-                                .sizeValidation(value);
-                          }
-                        },
-                        keyboardType: TextInputType.name,
-                        textEditingController: sizeEditingController,
-                        headingText: "Size",
-                        hintText: "Enter size of product",
-                      ),
-                      8.verticalSpace,
-                      !isSizeValidated
-                          ? SizedBox(
-                              height: 20.h,
-                              child: Text(
-                                "Please give a valid size",
-                                style: FontPallette.subtitleStyle.copyWith(
-                                    color: ColorPallette.redColor,
-                                    fontSize: 10.sp),
-                              ),
-                            )
-                          : SizedBox(
-                              height: 20.h,
-                            ),
-                      NuemorphicTextField(
-                        onChanged: (value) {
-                          if (value.isEmpty || value.length < 2) {
-                            context
-                                .read<AddSizeProvider>()
-                                .stockValidation(value);
-                          }
-                        },
-                        keyboardType: TextInputType.number,
-                        textEditingController: stockEditingController,
-                        headingText: "Stock",
-                        hintText: "Enter stock of product",
-                      ),
-                      8.verticalSpace,
-                      !isStockValidated
-                          ? SizedBox(
-                              height: 20.h,
-                              child: Text(
-                                "Please give a valid price",
-                                style: FontPallette.subtitleStyle.copyWith(
-                                    color: ColorPallette.redColor,
-                                    fontSize: 10.sp),
-                              ),
-                            )
-                          : SizedBox(
-                              height: 20.h,
-                            ),
-                      NuemorphicTextField(
-                        onChanged: (value) {
-                          if (value.isEmpty || value.length < 2) {
-                            context
-                                .read<AddSizeProvider>()
-                                .receivingPriceValidation(value);
-                          }
-                        },
-                        keyboardType: TextInputType.number,
-                        textEditingController: recievingPriceEditingController,
-                        headingText: "Recieving Price",
-                        hintText: "Enter recieving price of product",
-                      ),
-                      8.verticalSpace,
-                      !isRecievingPriceValidated
-                          ? SizedBox(
-                              height: 20.h,
-                              child: Text(
-                                "Please give a valid price",
-                                style: FontPallette.subtitleStyle.copyWith(
-                                    color: ColorPallette.redColor,
-                                    fontSize: 10.sp),
-                              ),
-                            )
-                          : SizedBox(
-                              height: 20.h,
-                            ),
-                      NuemorphicTextField(
-                        onChanged: (value) {
-                          if (value.isEmpty || value.length < 2) {
-                            context
-                                .read<AddSizeProvider>()
-                                .sellingPriceValidation(value);
-                          }
-                        },
-                        keyboardType: TextInputType.number,
-                        textEditingController: sellingPriceEditingController,
-                        headingText: "Selling Price",
-                        hintText: "Enter selling Price of product",
-                      ),
-                      8.verticalSpace,
-                      !isSellingPriceValidated
-                          ? SizedBox(
-                              height: 20.h,
-                              child: Text(
-                                "Please give a valid price",
-                                style: FontPallette.subtitleStyle.copyWith(
-                                    color: ColorPallette.redColor,
-                                    fontSize: 10.sp),
-                              ),
-                            )
-                          : SizedBox(
-                              height: 20.h,
-                            ),
-                      NuemorphicTextField(
-                        onChanged: (value) {
-                          if (value.isEmpty || value.length < 2) {
-                            context
-                                .read<AddSizeProvider>()
-                                .discountPriceValidation(value);
-                          }
-                        },
-                        keyboardType: TextInputType.number,
-                        textEditingController: discountPriceEditingController,
-                        headingText: "Discount price",
-                        hintText: "Enter price of product",
-                      ),
-                      8.verticalSpace,
-                      !isDiscountPriceValidated
-                          ? SizedBox(
-                              height: 20.h,
-                              child: Text(
-                                "Please give a valid price",
-                                style: FontPallette.subtitleStyle.copyWith(
-                                    color: ColorPallette.redColor,
-                                    fontSize: 10.sp),
-                              ),
-                            )
-                          : SizedBox(
-                              height: 20.h,
-                            ),
-                      20.verticalSpace,
-                      GestureDetector(
-                        onTap: () {
-                          context.read<AddSizeProvider>().addSize(
-                              discountPrice:
-                                  discountPriceEditingController.text,
-                              recievingPrice:
-                                  recievingPriceEditingController.text,
-                              sellingPrice: sellingPriceEditingController.text,
-                              categoryId: product?.categoryId ?? "",
-                              productId: product?.id ?? "",
-                              size: sizeEditingController.text,
-                              stock: stockEditingController.text,
-                              variantID: variant?.variantId ?? "");
-                          context
-                              .read<ProductDetailProvider>()
-                              .getVariants(product?.id ?? "");
-                          context
-                              .read<ProductDetailProvider>()
-                              .getVariantDetails(variant?.variantId ?? "");
-                          context.read<HomeProvider>().getAllProducts();
-                          context.read<AddVariantProvider>().clearData();
-                        },
-                        child: NeumorphicContainer(
-                          height: 50.h,
-                          width: 120.h,
-                          childWidget: Center(
-                            child: Text(
-                              "Add",
-                              style: FontPallette.headingStyle
-                                  .copyWith(fontSize: 14.sp),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+              : AddSizeTextFields(
+                  sizeEditingController: sizeEditingController,
+                  isSizeValidated: isSizeValidated,
+                  stockEditingController: stockEditingController,
+                  isStockValidated: isStockValidated,
+                  recievingPriceEditingController:
+                      recievingPriceEditingController,
+                  isRecievingPriceValidated: isRecievingPriceValidated,
+                  sellingPriceEditingController: sellingPriceEditingController,
+                  isSellingPriceValidated: isSellingPriceValidated,
+                  discountPriceEditingController:
+                      discountPriceEditingController,
+                  isDiscountPriceValidated: isDiscountPriceValidated,
+                  addSizeProvider: addSizeProvider,
+                  product: product,
+                  variant: variant,
+                  detailPageProvider: detailPageProvider),
         );
       },
     );

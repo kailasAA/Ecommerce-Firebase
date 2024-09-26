@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
-import 'package:shoe_app/common/common_functions/show_toast.dart';
-import 'package:shoe_app/common_widgets/neumorphic.dart';
 import 'package:shoe_app/common_widgets/progress_indicators.dart';
-import 'package:shoe_app/common_widgets/textform_field.dart';
 import 'package:shoe_app/route/argument_model/add_product__arguments.dart';
 import 'package:shoe_app/utils/color_pallette.dart';
 import 'package:shoe_app/utils/font_pallette.dart';
+import 'package:shoe_app/views/add_product/view/widgets/add_product_button.dart';
+import 'package:shoe_app/views/add_product/view/widgets/add_product_image_picker.dart';
+import 'package:shoe_app/views/add_product/view/widgets/add_product_text_fields.dart';
 import 'package:shoe_app/views/add_product/view_model/add_product_provider.dart';
+import 'package:shoe_app/views/home/view_model/home_provider.dart';
 
 class AddScreen extends StatelessWidget {
   const AddScreen({
@@ -20,7 +21,9 @@ class AddScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final formkey = GlobalKey<FormState>();
+    final homeProvider = context.read<HomeProvider>();
+    final addProductProvider = context.read<AddProductProvider>();
+
     return Scaffold(
       backgroundColor: ColorPallette.scaffoldBgColor,
       body: Consumer<AddProductProvider>(builder: (context, value, child) {
@@ -64,210 +67,24 @@ class AddScreen extends StatelessWidget {
                   10.verticalSpace,
                   Column(
                     children: [
-                      GestureDetector(
-                        onTap: () {
-                          context
-                              .read<AddProductProvider>()
-                              .selectMultipleImage();
-                        },
-                        child: pickeImagelist.isEmpty
-                            ? NeumorphicContainer(
-                                height: 250.h,
-                                width: 330.w,
-                                childWidget:
-                                    // pickeImage.isEmpty
-                                    //     ?
-                                    Icon(
-                                  Icons.add_a_photo_outlined,
-                                  size: 50.r,
-                                  color: ColorPallette.greyColor,
-                                ))
-                            : SizedBox(
-                                height: 320.h,
-                                width: double.infinity,
-                                child: ListView.builder(
-                                  shrinkWrap: true,
-                                  padding: EdgeInsets.zero,
-                                  itemCount: pickeImagelist.length,
-                                  scrollDirection: Axis.horizontal,
-                                  itemBuilder: (context, index) {
-                                    return Padding(
-                                      padding: EdgeInsets.all(20.r),
-                                      child: NeumorphicContainer(
-                                        height: 250.h,
-                                        width: 330.w,
-                                        childWidget: ClipRRect(
-                                          borderRadius: BorderRadius.circular(
-                                              15.r), // Rounded corners
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(15.r),
-                                            ),
-                                            height: 230.h,
-                                            width: 310.w,
-                                            child: Image.file(
-                                              pickeImagelist[index],
-                                              fit: BoxFit.cover,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ),
-                      ),
+                      AddProductImagePicker(pickeImagelist: pickeImagelist),
                       20.verticalSpace,
-                      Form(
-                        key: formkey,
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 15.w),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-
-                              NuemorphicTextField(
-                                onChanged: (value) {
-                                  if (value.isEmpty || value.length < 2) {
-                                    context
-                                        .read<AddProductProvider>()
-                                        .nameValidation(value);
-                                  }
-                                },
-                                keyboardType: TextInputType.name,
-                                textEditingController: nameController,
-                                headingText: "Name",
-                                hintText: "Enter name of product",
-                              ),
-                              5.verticalSpace,
-                              !isNameValidated
-                                  ? SizedBox(
-                                      height: 20.h,
-                                      child: Text(
-                                        "Please give a valid name",
-                                        style: FontPallette.subtitleStyle
-                                            .copyWith(
-                                                color: ColorPallette.redColor,
-                                                fontSize: 10.sp),
-                                      ),
-                                    )
-                                  : SizedBox(
-                                      height: 20.h,
-                                    ),
-
-
-                              NuemorphicTextField(
-                                onChanged: (value) {
-                                  if (value.isEmpty || value.length < 2) {
-                                    context
-                                        .read<AddProductProvider>()
-                                        .colorValidation(value);
-                                  }
-                                },
-                                keyboardType: TextInputType.name,
-                                textEditingController: colorController,
-                                headingText: "Color",
-                                hintText: "Enter color of the product",
-                              ),
-                              5.verticalSpace,
-                              !isColorValidate
-                                  ? SizedBox(
-                                      height: 20.h,
-                                      child: Text(
-                                        "Please give a valid Color",
-                                        style: FontPallette.subtitleStyle
-                                            .copyWith(
-                                                color: ColorPallette.redColor,
-                                                fontSize: 10.sp),
-                                      ),
-                                    )
-                                  : SizedBox(
-                                      height: 20.h,
-                                    ),
-                              NuemorphicTextField(
-                                onChanged: (value) {
-                                  if (value.isEmpty || value.length < 2) {
-                                    context
-                                        .read<AddProductProvider>()
-                                        .brandValidation(value);
-                                  }
-                                },
-                                keyboardType: TextInputType.name,
-                                textEditingController: brandController,
-                                headingText: "Brand Name",
-                                hintText: "Enter name of Brand",
-                              ),
-                              5.verticalSpace,
-                              !isBrandValidate
-                                  ? SizedBox(
-                                      height: 20.h,
-                                      child: Text(
-                                        "Please give a valid name",
-                                        style: FontPallette.subtitleStyle
-                                            .copyWith(
-                                                color: ColorPallette.redColor,
-                                                fontSize: 10.sp),
-                                      ),
-                                    )
-                                  : SizedBox(
-                                      height: 20.h,
-                                    )
-                            ],
-                          ),
-                        ),
-                      ),
+                      AddProductTextFields(
+                          nameController: nameController,
+                          isNameValidated: isNameValidated,
+                          colorController: colorController,
+                          isColorValidate: isColorValidate,
+                          brandController: brandController,
+                          isBrandValidate: isBrandValidate),
                       30.verticalSpace,
-                      GestureDetector(
-                        onTap: () {
-                          if (pickeImagelist.isNotEmpty) {
-                            context
-                                .read<AddProductProvider>()
-                                .colorValidation(colorController.text);
-                            context
-                                .read<AddProductProvider>()
-                                .nameValidation(nameController.text);
-                            context
-                                .read<AddProductProvider>()
-                                .brandValidation(brandController.text);
-                            final isValidated = context
-                                .read<AddProductProvider>()
-                                .isValidated();
-                            if (isValidated) {
-                              print("form is validated");
-                              context.read<AddProductProvider>().addBaseProduct(
-                                  color: colorController.text,
-                                  brandName: brandController.text,
-                                  name: nameController.text,
-                                  // price: priceController.text.toString(),
-                                  // sellingPrice:
-                                  //     sellingPriceController.text.toString(),
-                                  categoryId:
-                                      addProductArguments.categoryId ?? "",
-                                  categoryName:
-                                      addProductArguments.categoryName ?? "");
-                            } else {
-                              print("not validated");
-                            }
-                          } else {
-                            showToast("Please select a image",
-                                toastColor: ColorPallette.redColor);
-                          }
-                        },
-                        child: NeumorphicContainer(
-                          height: 50.h,
-                          width: 150.w,
-                          childWidget: Center(
-                            child: Text(
-                              "Add Product",
-                              style: FontPallette.bodyStyle.copyWith(
-                                  color: ColorPallette.blackColor,
-                                  fontSize: 15.sp,
-                                  fontWeight: FontWeight.w900),
-                            ),
-                          ),
-                        ),
-                      ),
+                      AddProductButton(
+                          pickeImagelist: pickeImagelist,
+                          addProductProvider: addProductProvider,
+                          colorController: colorController,
+                          nameController: nameController,
+                          brandController: brandController,
+                          addProductArguments: addProductArguments,
+                          homeProvider: homeProvider),
                       30.verticalSpace,
                     ],
                   )

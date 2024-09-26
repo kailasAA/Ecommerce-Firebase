@@ -46,6 +46,8 @@ class CatgeoryProvider extends ChangeNotifier {
     }
   }
 
+  // to  get categories
+
   Future<void> getCategories() async {
     categoryList = [];
     try {
@@ -78,7 +80,25 @@ class CatgeoryProvider extends ChangeNotifier {
         await _firestore.collection("products").doc(doc.id).delete();
       }
 
-      getCategories();
+      var variants = await _firestore
+          .collection("variants")
+          .where('category_id', isEqualTo: categoryId)
+          .get();
+
+      for (var doc in variants.docs) {
+        await _firestore.collection('variants').doc(doc.id).delete();
+      }
+
+      var sizes = await _firestore
+          .collection("sizes")
+          .where("category_id", isEqualTo: categoryId)
+          .get();
+      for (var size in sizes.docs) {
+        await _firestore.collection("sizes").doc(size.id).delete();
+      }
+
+      getCategoryLoading = false;
+      notifyListeners();
     } catch (e) {
       print(e.toString());
       getCategoryLoading = false;
@@ -103,6 +123,8 @@ class CatgeoryProvider extends ChangeNotifier {
       getCategoryLoading = true;
     }
   }
+
+  // to change the selected category
 
   void changeSelectedCategory(String categoryName) {
     categoryEditingController = TextEditingController(text: categoryName);

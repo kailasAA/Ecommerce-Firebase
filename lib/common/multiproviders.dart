@@ -7,7 +7,7 @@ import 'package:shoe_app/views/categories/view_model.dart/catgeory_provider.dart
 import 'package:shoe_app/views/detail_page/view_model/product_detail_provider.dart';
 import 'package:shoe_app/views/edit_product/view_model/edit_product_provider.dart';
 import 'package:shoe_app/views/home/view_model/home_provider.dart';
-import 'package:shoe_app/views/main_screen%20copy/viemodel/main_screen_provider.dart';
+import 'package:shoe_app/views/main_screen/viemodel/main_screen_provider.dart';
 
 class Multiproviders {
   static List<SingleChildWidget> providerList = [

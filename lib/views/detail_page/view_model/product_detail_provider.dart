@@ -5,6 +5,8 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shoe_app/common/common_functions/pick_image.dart';
+import 'package:shoe_app/common/common_functions/show_toast.dart';
+import 'package:shoe_app/views/detail_page/models/size_model.dart';
 import 'package:shoe_app/views/detail_page/models/variant_model.dart';
 import 'package:shoe_app/views/home/models/product_model.dart';
 
@@ -16,30 +18,30 @@ class ProductDetailProvider extends ChangeNotifier {
   ProductModel? product;
   List<Variant> variantList = [];
   Variant? variant;
+  List<SizeModel> variantSizes = [];
+  SizeModel? selectedSize;
 
+// to get the product details
   Future<void> getProductDetails(String productId) async {
     try {
       product = null;
       isLoading = true;
+      notifyListeners();
       var data = await firestore.collection("products").doc(productId).get();
       product = ProductModel.fromMap(data.data() as Map<String, dynamic>);
       isLoading = false;
       notifyListeners();
-
-      print("product fetched successfully");
-      print(product);
     } catch (e) {
       isLoading = false;
       notifyListeners();
-
       print(e.toString());
     }
   }
 
+// to get the all variants
   Future<void> getVariants(String productId) async {
     try {
       variant = null;
-      variantList = [];
       isLoading = true;
       notifyListeners();
       var data = await firestore.collection("variants").get();
@@ -55,9 +57,6 @@ class ProductDetailProvider extends ChangeNotifier {
           return element.productId == productId;
         },
       ).toList();
-      
-      print(variantList);
-      // selectedVariantId = variantList.first.variantId ?? "";
       variant = variantList[0];
       isLoading = false;
       notifyListeners();
@@ -69,24 +68,59 @@ class ProductDetailProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> getVariantDetails(String variantId) async {
+// to get all the sizes
+  Future<void> getSizes() async {
     try {
-      variant = null;
       isLoading = true;
-      var data = await firestore.collection("variants").doc(variantId).get();
-      variant = Variant.fromMap(data.data() as Map<String, dynamic>);
+      notifyListeners();
+      final data = await firestore.collection("sizes").get();
+      final sizeData = data.docs;
+      final allSizes = sizeData.map(
+        (size) {
+          return SizeModel.fromMap(size.data());
+        },
+      ).toList();
+
+      variantSizes = [];
+      variantSizes = allSizes.where(
+        (size) {
+          return size.variantId == variant?.variantId;
+        },
+      ).toList();
+      if (variantSizes.isEmpty) {
+        selectedSize = null;
+      }
+      selectedSize = variantSizes[0];
       isLoading = false;
       notifyListeners();
-      print("variant fetched successfully");
-      print(product);
+    } catch (e) {
+      print("size was not fetched $e");
+      isLoading = false;
+      notifyListeners();
+    }
+  }
+
+// to get the variant details
+  Future<void> getVariantDetails(
+      String variantId, Variant? selectedVariant) async {
+    try {
+      isLoading = true;
+      notifyListeners();
+      variant = selectedVariant;
+      variantSizes = [];
+      // var data = await firestore.collection("variants").doc(variantId).get();
+      // variant = Variant.fromMap(data.data() as Map<String, dynamic>);
+      getSizes();
+      isLoading = false;
+      notifyListeners();
     } catch (e) {
       isLoading = false;
       notifyListeners();
-
       print(e.toString());
     }
   }
 
+// to select multiple images
   Future<void> selectMultipleImage() async {
     final list = await pickMultipleImage();
     if (list.isNotEmpty) {
@@ -96,6 +130,7 @@ class ProductDetailProvider extends ChangeNotifier {
     }
   }
 
+// to upload list of images to firebase
   Future<List<String?>> uploadImageToFirebase(List<XFile?> imageFiles) async {
     List<String> downloadUrls = [];
     for (var imageFile in imageFiles) {
@@ -121,6 +156,7 @@ class ProductDetailProvider extends ChangeNotifier {
     return downloadUrls;
   }
 
+//  to add a product variant
   Future<void> addProductVariant(String variantColour, String categoryId,
       String categoryName, String productId, String productName) async {
     try {
@@ -147,117 +183,54 @@ class ProductDetailProvider extends ChangeNotifier {
     }
   }
 
+// to remove a product and sizes related to it
   Future<void> removeProduct(String productId) async {
+    isLoading = true;
+    notifyListeners();
     try {
       final productRef =
           FirebaseFirestore.instance.collection('variants').doc(productId);
       await productRef.delete();
+
+      var sizes = await firestore
+          .collection("sizes")
+          .where("product_id", isEqualTo: productId)
+          .get();
+      for (var size in sizes.docs) {
+        await firestore.collection("sizes").doc(size.id).delete();
+      }
       notifyListeners();
+      showToast("Variant successfully deleted");
+      isLoading = false;
+      notifyListeners();
+    } catch (e) {
+      isLoading = false;
+      notifyListeners();
+      print(e.toString());
+    }
+  }
+
+// to remove the size only
+  Future<void> removeSize(String sizeId) async {
+    try {
+      final sizeRef =
+          FirebaseFirestore.instance.collection('sizes').doc(sizeId);
+      await sizeRef.delete();
+
+      notifyListeners();
+      showToast("Size successfully deleted");
     } catch (e) {
       print(e.toString());
     }
   }
 
-  // Future<void> addVariants() async {
-  //   try {
-  //     DocumentReference variantRef = firestore.collection("variants").doc();
-  //     await variantRef.set({
-  //       'variant_id': variantRef.id,
-  //       'product_id': productRef.id,
-  //       'color': color,
-  //       "name": name,
-  //       "brand_name": brandName,
-  //       "category_id": categoryId,
-  //       "category_name": categoryName,
-  //       "image_url": imageUrlList,
-  //     });
-  //   } catch (e) {
-  //     print(e.toString());
-  //   }
-  // }
-
-  // Future<void> updateProductInfo(String productId, String name, String price,
-  //     String sellingPrice, String brandName) async {
-  //   final productRef =
-  //       FirebaseFirestore.instance.collection('products').doc(productId);
-
-  //   await productRef.update({
-  //     'name': name,
-  //     'price': price,
-  //     'selling_price': sellingPrice,
-  //     'brand_name': brandName,
-  //   });
-  // }
-
-  // Future<void> addVariantWithImagesAndSizes(String productId, String color,
-  //     List<String> imageUrls, Map<String, Map<String, dynamic>> sizes) async {
-  //   final productRef =
-  //       FirebaseFirestore.instance.collection('products').doc(productId);
-
-  //   await productRef.update({
-  //     'variants.$color': {'color': color, 'sizes': sizes, 'images': imageUrls}
-  //   });
-  // }
-
-  // Future<void> removeVariant(String productId, String color) async {
-  //   final productRef =
-  //       FirebaseFirestore.instance.collection('products').doc(productId);
-
-  //   await productRef.update({'variants.$color': FieldValue.delete()});
-  // }
-
-  // Future<void> addSizeToVariant(String productId, String color, String size,
-  //     String price, String sellingPrice, int stock) async {
-  //   final productRef =
-  //       FirebaseFirestore.instance.collection('products').doc(productId);
-
-  //   await productRef.update({
-  //     'variants.$color.sizes.$size': {
-  //       'price': price,
-  //       'selling_price': sellingPrice,
-  //       'stock': stock
-  //     }
-  //   });
-  // }
-
-  // Future<void> removeSizeFromVariant(
-  //     String productId, String color, String size) async {
-  //   final productRef =
-  //       FirebaseFirestore.instance.collection('products').doc(productId);
-
-  //   await productRef
-  //       .update({'variants.$color.sizes.$size': FieldValue.delete()});
-  // }
-
-  // Future<void> updateSizeInVariant(String productId, String color, String size,
-  //     String price, String sellingPrice, int stock) async {
-  //   final productRef =
-  //       FirebaseFirestore.instance.collection('products').doc(productId);
-
-  //   await productRef.update({
-  //     'variants.$color.sizes.$size': {
-  //       'price': price,
-  //       'selling_price': sellingPrice,
-  //       'stock': stock
-  //     }
-  //   });
-  // }
-
-  // Future<void> updateImagesForVariant(
-  //     String productId, String color, List<String> imageUrls) async {
-  //   final productRef =
-  //       FirebaseFirestore.instance.collection('products').doc(productId);
-
-  //   await productRef.update({'variants.$color.images': imageUrls});
-  // }
-
-  // Future<void> removeImageFromVariant(
-  //     String productId, String color, String imageUrlToRemove) async {
-  //   final productRef =
-  //       FirebaseFirestore.instance.collection('products').doc(productId);
-
-  //   await productRef.update({
-  //     'variants.$color.images': FieldValue.arrayRemove([imageUrlToRemove])
-  //   });
-  // }
+// to update the selected size
+  Future<void> selectSize(SizeModel sizeModel) async {
+    try {
+      selectedSize = sizeModel;
+      notifyListeners();
+    } catch (e) {
+      print(e.toString());
+    }
+  }
 }

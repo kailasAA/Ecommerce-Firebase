@@ -1,16 +1,14 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:shoe_app/common_widgets/neumorphic.dart';
 import 'package:shoe_app/common_widgets/progress_indicators.dart';
-import 'package:shoe_app/route/argument_model/product_detail_arguments.dart';
-import 'package:shoe_app/route/route_generator.dart';
 import 'package:shoe_app/utils/color_pallette.dart';
 import 'package:shoe_app/utils/font_pallette.dart';
 import 'package:shoe_app/views/categories/models/category_model.dart';
 import 'package:shoe_app/views/detail_page/models/variant_model.dart';
 import 'package:shoe_app/views/home/models/product_model.dart';
+import 'package:shoe_app/views/home/view/widgets/home_products_listview.dart';
 import 'package:shoe_app/views/home/view_model/home_provider.dart';
 import 'package:tuple/tuple.dart';
 
@@ -111,7 +109,8 @@ class _HomeScreenState extends State<HomeScreen> {
                               child: Center(
                                 child: Text(
                                   "No Product Found",
-                                  style: FontPallette.headingStyle,
+                                  style: FontPallette.headingStyle
+                                      .copyWith(fontSize: 15.sp),
                                 ),
                               ),
                             ),
@@ -121,157 +120,5 @@ class _HomeScreenState extends State<HomeScreen> {
         },
       ),
     );
-  }
-}
-
-class HomeProductListWithHeading extends StatelessWidget {
-  const HomeProductListWithHeading({
-    super.key,
-    this.productHeading,
-    required this.products,
-    required this.variantList,
-  });
-  final String? productHeading;
-  final List<ProductModel> products;
-  final List<Variant> variantList;
-  @override
-  Widget build(BuildContext context) {
-    return products.isNotEmpty
-        ? Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: EdgeInsets.only(left: 10.w),
-                child: Text(
-                  productHeading ?? "",
-                  style: FontPallette.headingStyle,
-                ),
-              ),
-              SizedBox(
-                height: 260.h,
-                child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemBuilder: (context, index) {
-                      final product = products[index];
-                      final variants = variantList.where(
-                        (element) {
-                          return element.productId == product.id;
-                        },
-                      ).toList();
-                      final variant = variants[0];
-                      return GestureDetector(
-                        onTap: () {
-                          Navigator.pushNamed(
-                              context, RouteGenerator.detailScreen,
-                              arguments: ProductDetailArguments(
-                                  categoryId: product.categoryId,
-                                  product: product));
-                        },
-                        child: Padding(
-                          padding: EdgeInsets.all(10.r),
-                          child: NeumorphicContainer(
-                            offset: const Offset(3, 3),
-                            blurRadius: 12.r,
-                            height: 220.h,
-                            width: 160.w,
-                            childWidget: Padding(
-                              padding: EdgeInsets.all(10.r),
-                              child: Column(
-                                children: [
-                                  SizedBox(
-                                    height: 130.w,
-                                    child: ClipRRect(
-                                      borderRadius: const BorderRadius.vertical(
-                                        top: Radius.circular(12),
-                                      ),
-                                      child: (variant.imageUrlList ?? [])
-                                              .isNotEmpty
-                                          ? CachedNetworkImage(
-                                              imageUrl:
-                                                  variant.imageUrlList?[0] ??
-                                                      "",
-                                              imageBuilder:
-                                                  (context, imageProvider) {
-                                                return Container(
-                                                  width: double.infinity,
-                                                  decoration: BoxDecoration(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            10),
-                                                    image: DecorationImage(
-                                                      image: imageProvider,
-                                                      fit: BoxFit.cover,
-                                                    ),
-                                                  ),
-                                                );
-                                              },
-                                              placeholder: (context, url) =>
-                                                  Center(
-                                                      child: LoadingAnimation(
-                                                size: 20.r,
-                                              )),
-                                              errorWidget:
-                                                  (context, url, error) =>
-                                                      const Icon(Icons.error),
-                                            )
-                                          : Container(
-                                              height: 130.w,
-                                              decoration: BoxDecoration(
-                                                  color:
-                                                      ColorPallette.greyColor,
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          10)),
-                                            ),
-                                    ),
-                                  ),
-                                  5.verticalSpace,
-                                  Column(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      SizedBox(
-                                        height: 40.h,
-                                        child: Text(
-                                          product.name ?? "",
-                                          style: FontPallette.headingStyle
-                                              .copyWith(fontSize: 13.sp),
-                                        ),
-                                      ),
-                                      // 10.verticalSpace,
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Text(
-                                            product.brandName ?? "",
-                                            style: FontPallette.headingStyle
-                                                .copyWith(fontSize: 13.sp),
-                                          ),
-                                          // Text(
-                                          //   "₹${product.price ?? ""}",
-                                          //   style: FontPallette.headingStyle
-                                          //       .copyWith(fontSize: 13.sp),
-                                          // ),
-                                        ],
-                                      ),
-                                    ],
-                                  )
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      );
-                    },
-                    // separatorBuilder: (context, index) => 20.horizontalSpace,
-                    itemCount: products.length),
-              ),
-            ],
-          )
-        : const SizedBox();
   }
 }

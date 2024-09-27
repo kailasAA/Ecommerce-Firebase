@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
@@ -8,6 +7,7 @@ import 'package:shoe_app/utils/font_pallette.dart';
 import 'package:shoe_app/views/add_size/view/widgets/add_size_button.dart';
 
 import 'package:shoe_app/views/add_size/view_model/add_size_provider.dart';
+import 'package:shoe_app/views/detail_page/models/size_model.dart';
 import 'package:shoe_app/views/detail_page/models/variant_model.dart';
 import 'package:shoe_app/views/detail_page/view_model/product_detail_provider.dart';
 import 'package:shoe_app/views/home/models/product_model.dart';
@@ -29,6 +29,8 @@ class AddSizeTextFields extends StatelessWidget {
     required this.product,
     required this.variant,
     required this.detailPageProvider,
+    required this.isUpdating,
+    this.updatingSize,
   });
 
   final TextEditingController sizeEditingController;
@@ -45,6 +47,9 @@ class AddSizeTextFields extends StatelessWidget {
   final ProductModel? product;
   final Variant? variant;
   final ProductDetailProvider detailPageProvider;
+  final bool isUpdating;
+
+  final SizeModel ?updatingSize;
 
   @override
   Widget build(BuildContext context) {
@@ -174,6 +179,8 @@ class AddSizeTextFields extends StatelessWidget {
               ),
         20.verticalSpace,
         AddSizeButton(
+            updatingSize: updatingSize,
+            isUpdating: isUpdating,
             addSizeProvider: addSizeProvider,
             discountPriceEditingController: discountPriceEditingController,
             recievingPriceEditingController: recievingPriceEditingController,

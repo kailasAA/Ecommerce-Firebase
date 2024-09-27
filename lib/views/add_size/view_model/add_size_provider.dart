@@ -21,6 +21,7 @@ class AddSizeProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
+
   void sellingPriceValidation(String value) {
     if (value.isEmpty && value.length < 2) {
       isSellingPriceValidated = false;
@@ -30,6 +31,7 @@ class AddSizeProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
+
   void discountPriceValidation(String value) {
     if (value.isEmpty && value.length < 2) {
       isDiscountPriceValidated = false;
@@ -39,6 +41,7 @@ class AddSizeProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
+
   void sizeValidation(String value) {
     if (value.isEmpty && value.length < 2) {
       isSizeValidated = false;
@@ -48,6 +51,7 @@ class AddSizeProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
+
   void stockValidation(String value) {
     if (value.isEmpty && value.length < 2) {
       isStockValidated = false;
@@ -58,7 +62,6 @@ class AddSizeProvider extends ChangeNotifier {
     }
   }
 
-  
 // to add a new size
   Future<void> addSize(
       {required String recievingPrice,
@@ -86,6 +89,42 @@ class AddSizeProvider extends ChangeNotifier {
 
       final sizeId = productRef.id;
       await productRef.update({"size_id": sizeId});
+      isLoading = false;
+      notifyListeners();
+      showToast("size added successfully");
+    } catch (e) {
+      isLoading = false;
+      notifyListeners();
+      print(e.toString());
+    }
+  }
+
+  // to add a new size
+  Future<void> updateSize(
+      {required String recievingPrice,
+      required String sellingPrice,
+      required String discountPrice,
+      required String size,
+      required String stock,
+      required String categoryId,
+      required String productId,
+      required String variantID,
+      required String sizeId}) async {
+    try {
+      isLoading = true;
+      notifyListeners();
+
+      await firestore.collection("sizes").doc(sizeId).update({
+        "variant_id": variantID,
+        "category_id": categoryId,
+        "product_id": productId,
+        "size": size,
+        "stock": stock,
+        "recieving_price": recievingPrice,
+        "selling_price": sellingPrice,
+        "discount_price": discountPrice
+      });
+
       isLoading = false;
       notifyListeners();
       showToast("size added successfully");

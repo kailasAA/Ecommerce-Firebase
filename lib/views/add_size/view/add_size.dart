@@ -15,18 +15,23 @@ class AddSizeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // final homeProvider = context.read<HomeProvider>();
+    final updatingSize = productEditingArgments.size;
+    bool isUpdating = productEditingArgments.size != null;
     final detailPageProvider = context.read<ProductDetailProvider>();
     final addSizeProvider = context.read<AddSizeProvider>();
-    final TextEditingController sizeEditingController = TextEditingController();
+    final TextEditingController sizeEditingController = TextEditingController(
+        text: updatingSize != null ? updatingSize.size : "");
     final TextEditingController recievingPriceEditingController =
-        TextEditingController();
+        TextEditingController(
+            text: updatingSize != null ? updatingSize.receivingPrice : "");
     final TextEditingController sellingPriceEditingController =
-        TextEditingController();
+        TextEditingController(
+            text: updatingSize != null ? updatingSize.sellingPrice : "");
     final TextEditingController discountPriceEditingController =
-        TextEditingController();
-    final TextEditingController stockEditingController =
-        TextEditingController();
+        TextEditingController(
+            text: updatingSize != null ? updatingSize.discountPrice : "");
+    final TextEditingController stockEditingController = TextEditingController(
+        text: updatingSize != null ? updatingSize.stock : "");
 
     return Selector<AddSizeProvider, Tuple6>(
       selector: (p0, p1) => Tuple6(
@@ -52,13 +57,17 @@ class AddSizeScreen extends StatelessWidget {
             backgroundColor: ColorPallette.scaffoldBgColor,
             centerTitle: true,
             title: Text(
-              "Add size",
+              updatingSize == null
+                  ? "Add Size and Details"
+                  : "Update Size and Details",
               style: FontPallette.headingStyle,
             ),
           ),
           body: isLoading
               ? const LoadingAnimation()
               : AddSizeTextFields(
+                  updatingSize: updatingSize,
+                  isUpdating: isUpdating,
                   sizeEditingController: sizeEditingController,
                   isSizeValidated: isSizeValidated,
                   stockEditingController: stockEditingController,

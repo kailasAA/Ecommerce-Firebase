@@ -14,7 +14,6 @@ import 'package:tuple/tuple.dart';
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key, required this.searchScreenArguments});
   final SearchScreenArguments searchScreenArguments;
-
   @override
   State<SearchScreen> createState() => _SearchScreenState();
 }
@@ -29,7 +28,6 @@ class _SearchScreenState extends State<SearchScreen> {
             .changeSearchedProducts(widget.searchScreenArguments.productList);
       },
     );
-
     super.initState();
   }
 
@@ -81,7 +79,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   ),
                 ),
               ),
-              productList.isEmpty
+              productList.isEmpty || searchProducts.isEmpty
                   ? SliverToBoxAdapter(
                       child: SizedBox(
                         height: 350.h,

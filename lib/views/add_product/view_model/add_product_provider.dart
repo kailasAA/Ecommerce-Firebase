@@ -6,6 +6,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:shoe_app/common/common_functions/pick_image.dart';
 import 'package:shoe_app/common/common_functions/show_toast.dart';
 
+
 class AddProductProvider extends ChangeNotifier {
   List<XFile?> pickedXfileList = [];
   List<File> pickedfileList = [];

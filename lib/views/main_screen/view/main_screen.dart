@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
@@ -31,7 +32,12 @@ class MainScreen extends StatelessWidget {
     ];
     return PopScope(
       canPop: false,
-      onPopInvoked: (didPop) {},
+      onPopInvoked: (didPop) async {
+        if (didPop) {
+          return;
+        }
+        SystemNavigator.pop();
+      },
       child: Scaffold(
         body: PageView(
             controller: pageController,
@@ -43,6 +49,8 @@ class MainScreen extends StatelessWidget {
           selector: (_, mainScreenProvider) => mainScreenProvider.selectedIndex,
           builder: (context, value, child) {
             return BottomNavigationBar(
+              enableFeedback: false,
+              mouseCursor: SystemMouseCursors.none,
               backgroundColor: ColorPallette.scaffoldBgColor,
               selectedLabelStyle:
                   FontPallette.headingStyle.copyWith(fontSize: 13.sp),

@@ -4,7 +4,7 @@ import 'package:shoe_app/utils/color_pallette.dart';
 
 class FontPallette {
   static TextStyle headingStyle = TextStyle(
-    fontSize: 18.sp,
+    fontSize: 16.sp,
     fontWeight: FontWeight.bold,
     color: ColorPallette.blackColor,
   );

@@ -20,8 +20,8 @@ class NeumorphicContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Offset distance = const Offset(10, 10);
-    double blur = 18.r;
+    Offset distance = const Offset(5, 5);
+    double blur = 15.r;
     return Center(
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),

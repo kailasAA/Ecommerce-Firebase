@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
@@ -24,6 +23,7 @@ class CategoryGridview extends StatelessWidget {
       padding: EdgeInsets.symmetric(vertical: 20.h),
       child: categoryList.isNotEmpty
           ? GridView.builder(
+              padding: EdgeInsets.only(top: 15.h),
               itemCount: categoryList.length,
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
@@ -51,9 +51,11 @@ class CategoryGridview extends StatelessWidget {
                   );
                 },
                 child: NeumorphicContainer(
+                  offset: const Offset(5, 5),
+                  blurRadius: 10.r,
                   width: 150.w,
                   childWidget: Padding(
-                    padding: EdgeInsets.all(10.r),
+                    padding: EdgeInsets.all(15.r),
                     child: Stack(
                       children: [
                         Center(
@@ -62,7 +64,7 @@ class CategoryGridview extends StatelessWidget {
                             categoryList[index].categoryName ?? "",
                             maxLines: 2,
                             style: FontPallette.headingStyle.copyWith(
-                              fontSize: 18.sp,
+                              fontSize: 17.sp,
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),

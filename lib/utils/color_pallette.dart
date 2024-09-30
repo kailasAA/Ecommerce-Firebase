@@ -10,11 +10,9 @@ class ColorPallette {
 
   static Color blackColor = Colors.black;
   static Color whiteColor = Colors.white;
-  // static Color purple = const Color.fromARGB(255, 104, 16, 187);
   static Color greyColor = Colors.grey;
   static Color darkGreyColor = Colors.grey.shade700;
   static Color greenColor = Colors.green;
-
   static Color redColor = Colors.red;
   static Color scaffoldBgColor = Colors.grey.shade300;
 }

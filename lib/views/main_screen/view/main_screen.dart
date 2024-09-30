@@ -9,7 +9,7 @@ import 'package:shoe_app/utils/font_pallette.dart';
 import 'package:shoe_app/views/categories/view/categories.dart';
 import 'package:shoe_app/views/home/view/home_screen.dart';
 import 'package:shoe_app/views/main_screen/viemodel/main_screen_provider.dart';
-import 'package:shoe_app/views/stocks/stocks_screen.dart';
+import 'package:shoe_app/views/orders/order_screen.dart';
 
 class MainScreen extends StatelessWidget {
   const MainScreen({super.key});
@@ -23,12 +23,12 @@ class MainScreen extends StatelessWidget {
       Assets.addSquareSvgrepoCom,
       Assets.activitySvgrepoCom,
     ];
-    List<String> bottomnavText = ["Home", "Add", "Stocks"];
+    List<String> bottomnavText = ["Home", "Add", "Orders"];
 
     List<Widget> screenList = [
       const HomeScreen(),
       const CategoriesScreen(),
-      const StocksScreen()
+      const OrderScreen()
     ];
     return PopScope(
       canPop: false,

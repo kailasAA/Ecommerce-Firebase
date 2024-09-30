@@ -27,7 +27,7 @@ class CategoryGridview extends StatelessWidget {
               itemCount: categoryList.length,
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
-                childAspectRatio: 3 / 2,
+                childAspectRatio: 6 / 4,
               ),
               itemBuilder: (context, index) => GestureDetector(
                 onLongPressStart: (details) {
@@ -64,7 +64,6 @@ class CategoryGridview extends StatelessWidget {
                             categoryList[index].categoryName ?? "",
                             maxLines: 2,
                             style: FontPallette.headingStyle.copyWith(
-                              fontSize: 17.sp,
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),

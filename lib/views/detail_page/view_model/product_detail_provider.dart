@@ -108,8 +108,6 @@ class ProductDetailProvider extends ChangeNotifier {
       notifyListeners();
       variant = selectedVariant;
       variantSizes = [];
-      // var data = await firestore.collection("variants").doc(variantId).get();
-      // variant = Variant.fromMap(data.data() as Map<String, dynamic>);
       getSizes();
       isLoading = false;
       notifyListeners();
@@ -183,6 +181,22 @@ class ProductDetailProvider extends ChangeNotifier {
     }
   }
 
+  // to reduce the stock
+
+  Future<void> updateStock(int stock, String stockId) async {
+    isLoading = true;
+    notifyListeners();
+    try {
+      final sizeRef = firestore.collection("sizes");
+      await sizeRef.doc(stockId).update({'stock': stock.toString()});
+      isLoading = false;
+      notifyListeners();
+    } catch (e) {
+      isLoading = false;
+      notifyListeners();
+    }
+  }
+
 // to remove a product and sizes related to it
   Future<void> removeProduct(String productId) async {
     isLoading = true;
@@ -212,6 +226,8 @@ class ProductDetailProvider extends ChangeNotifier {
 
 // to remove the size only
   Future<void> removeSize(String sizeId) async {
+    isLoading = true;
+    notifyListeners();
     try {
       final sizeRef =
           FirebaseFirestore.instance.collection('sizes').doc(sizeId);
@@ -219,7 +235,11 @@ class ProductDetailProvider extends ChangeNotifier {
 
       notifyListeners();
       showToast("Size successfully deleted");
+      isLoading = false;
+      notifyListeners();
     } catch (e) {
+      isLoading = false;
+      notifyListeners();
       print(e.toString());
     }
   }

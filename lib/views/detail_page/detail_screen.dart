@@ -7,6 +7,7 @@ import 'package:shoe_app/common/common_functions/dialog_box.dart';
 import 'package:shoe_app/common_widgets/neumorphic.dart';
 import 'package:shoe_app/common_widgets/progress_indicators.dart';
 import 'package:shoe_app/gen/assets.gen.dart';
+import 'package:shoe_app/route/argument_model/add_order_arguments.dart';
 import 'package:shoe_app/route/argument_model/product_detail_arguments.dart';
 import 'package:shoe_app/route/argument_model/product_editing_argments.dart';
 import 'package:shoe_app/route/route_generator.dart';
@@ -19,8 +20,6 @@ import 'package:shoe_app/views/detail_page/widgets/image_slider.dart';
 import 'package:shoe_app/views/detail_page/widgets/product_detail.dart';
 import 'package:shoe_app/views/home/models/product_model.dart';
 import 'package:tuple/tuple.dart';
-
-
 
 class DetailScreen extends StatefulWidget {
   const DetailScreen({super.key, required this.productDetailArguments});
@@ -53,6 +52,7 @@ class _DetailScreenState extends State<DetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final categoryName = widget.productDetailArguments.categoryName ?? "";
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
@@ -299,84 +299,112 @@ class _DetailScreenState extends State<DetailScreen> {
                             ),
                           ),
                           10.verticalSpace,
-                          SizedBox(
-                            height: 70.h,
-                            child: ListView.builder(
-                              shrinkWrap: true,
-                              itemCount: sizeList.length,
-                              scrollDirection: Axis.horizontal,
-                              itemBuilder: (context, index) {
-                                final isSelectedSize =
-                                    selectedSize == sizeList[index];
+                          sizeList.isNotEmpty
+                              ? SizedBox(
+                                  height: 70.h,
+                                  child: ListView.builder(
+                                    shrinkWrap: true,
+                                    itemCount: sizeList.length,
+                                    scrollDirection: Axis.horizontal,
+                                    itemBuilder: (context, index) {
+                                      final isSelectedSize =
+                                          selectedSize == sizeList[index];
 
-                                final size = sizeList[index];
-                                return Padding(
-                                  padding: EdgeInsets.all(10.r),
-                                  child: Column(
-                                    children: [
-                                      InkWell(
-                                        onTap: () {
-                                          if (selectedSize != size) {
-                                            provider.selectSize(size);
-                                          }
-                                        },
-                                        child: Container(
-                                          height: 35.h,
-                                          width: 80.w,
-                                          decoration: BoxDecoration(
-                                            border: Border.all(
-                                                color: isSelectedSize
-                                                    ? ColorPallette.blackColor
-                                                    : ColorPallette.greyColor,
-                                                width: isSelectedSize ? 3 : 3),
-                                            color: isSelectedSize
-                                                ? ColorPallette.blackColor
-                                                : ColorPallette.whiteColor,
-                                            borderRadius:
-                                                BorderRadius.circular(25),
-                                          ),
-                                          child: Center(
-                                            child: Text(
-                                              size.size,
-                                              style: FontPallette.headingStyle
-                                                  .copyWith(
-                                                      fontSize: 12.sp,
+                                      final size = sizeList[index];
+                                      return Padding(
+                                        padding: EdgeInsets.all(10.r),
+                                        child: Column(
+                                          children: [
+                                            InkWell(
+                                              onTap: () {
+                                                if (selectedSize != size) {
+                                                  provider.selectSize(size);
+                                                }
+                                              },
+                                              child: Container(
+                                                height: 35.h,
+                                                width: 80.w,
+                                                decoration: BoxDecoration(
+                                                  border: Border.all(
                                                       color: isSelectedSize
                                                           ? ColorPallette
-                                                              .whiteColor
+                                                              .blackColor
                                                           : ColorPallette
-                                                              .blackColor),
+                                                              .greyColor,
+                                                      width: isSelectedSize
+                                                          ? 3
+                                                          : 3),
+                                                  color: isSelectedSize
+                                                      ? ColorPallette.blackColor
+                                                      : ColorPallette
+                                                          .whiteColor,
+                                                  borderRadius:
+                                                      BorderRadius.circular(25),
+                                                ),
+                                                child: Center(
+                                                  child: Text(
+                                                    size.size,
+                                                    style: FontPallette
+                                                        .headingStyle
+                                                        .copyWith(
+                                                            fontSize: 12.sp,
+                                                            color: isSelectedSize
+                                                                ? ColorPallette
+                                                                    .whiteColor
+                                                                : ColorPallette
+                                                                    .blackColor),
+                                                  ),
+                                                ),
+                                              ),
                                             ),
-                                          ),
+                                          ],
                                         ),
-                                      ),
-                                    ],
+                                      );
+                                    },
                                   ),
-                                );
-                              },
-                            ),
-                          ),
+                                )
+                              : SizedBox(
+                                  height: 50.h,
+                                  // child: Center(
+                                  //   child: Text(
+                                  //     "No stock Found",
+                                  //     style: FontPallette.headingStyle,
+                                  //   ),
+                                  // ),
+                                ),
+                          20.verticalSpace
                         ],
                       ),
                       selectedSize != null
                           ? Column(
                               children: [
-                                NeumorphicContainer(
-                                  blurRadius: 15.r,
-                                  offset: const Offset(5, 5),
-                                  height: 50.w,
-                                  width: 120.w,
-                                  childWidget: Center(
-                                      child: Text(
-                                    "Reduce Stock",
-                                    style: FontPallette.headingStyle
-                                        .copyWith(fontSize: 13.sp),
-                                  )),
+                                GestureDetector(
+                                  onTap: () {
+                                    Navigator.pushNamed(
+                                        context, RouteGenerator.addOrderScreen,
+                                        arguments: AddOrderArguments(
+                                            categoryName: categoryName,
+                                            product: product,
+                                            size: selectedSize,
+                                            variant: variant));
+                                  },
+                                  child: NeumorphicContainer(
+                                    blurRadius: 15.r,
+                                    offset: const Offset(5, 5),
+                                    height: 50.w,
+                                    width: 120.w,
+                                    childWidget: Center(
+                                        child: Text(
+                                      "Add orders",
+                                      style: FontPallette.headingStyle
+                                          .copyWith(fontSize: 13.sp),
+                                    )),
+                                  ),
                                 ),
                                 15.verticalSpace,
                               ],
                             )
-                          : const SizedBox(),
+                          : const Center(),
                     ],
                   );
           },

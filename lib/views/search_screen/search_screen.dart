@@ -103,6 +103,7 @@ class _SearchScreenState extends State<SearchScreen> {
                               .toList();
                           final variant = variants[0];
                           return ProductTile(
+                              
                               imageHeigh: 90.w,
                               height: 270.h,
                               width: 165.w,

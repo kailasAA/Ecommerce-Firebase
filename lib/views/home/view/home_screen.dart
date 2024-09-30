@@ -110,9 +110,15 @@ class _HomeScreenState extends State<HomeScreen> {
                                         ),
                                         15.horizontalSpace,
                                         Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
+                                          // mainAxisAlignment:
+                                          //     MainAxisAlignment.center,
                                           children: [
+                                            Text(
+                                              "Total Products: ${productList.length}",
+                                              style: FontPallette.headingStyle
+                                                  .copyWith(fontSize: 15.sp),
+                                            ),
+                                            10.verticalSpace,
                                             Text(
                                               "Total Products: ${productList.length}",
                                               style: FontPallette.headingStyle
@@ -138,6 +144,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                   return Column(
                                     children: [
                                       HomeProductListWithHeading(
+                                        categoryName:
+                                            category.categoryName ?? "",
                                         variantList: variantList,
                                         products:
                                             // productList,

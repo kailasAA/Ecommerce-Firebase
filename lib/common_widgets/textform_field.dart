@@ -16,11 +16,13 @@ class NuemorphicTextField extends StatelessWidget {
     this.keyboardType,
     this.textformFieldText,
     this.onChanged,
+    this.prefixText,
   });
   final TextEditingController? textEditingController;
   final String? hintText;
   final bool? obscureText;
   final Widget? prefixWidget;
+  final String? prefixText;
   final Widget? suffixWidget;
   final String? headingText;
   final TextInputType? keyboardType;
@@ -66,13 +68,14 @@ class NuemorphicTextField extends StatelessWidget {
               cursorColor: ColorPallette.greyColor,
               cursorWidth: 3,
               decoration: InputDecoration(
+                prefixText: prefixText,
                 prefixIcon: prefixWidget,
                 errorBorder: InputBorder.none,
                 border: InputBorder.none,
                 contentPadding:
                     const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
                 hintText: hintText ?? 'Enter text...',
-                hintStyle: TextStyle(color: Colors.grey[600]),
+                hintStyle: TextStyle(color: Colors.grey[600], fontSize: 13.sp),
               ),
             ),
           ),

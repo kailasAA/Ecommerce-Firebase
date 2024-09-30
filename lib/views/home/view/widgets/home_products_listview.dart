@@ -16,10 +16,12 @@ class HomeProductListWithHeading extends StatelessWidget {
     this.productHeading,
     required this.products,
     required this.variantList,
+    required this.categoryName,
   });
   final String? productHeading;
   final List<ProductModel> products;
   final List<Variant> variantList;
+  final String categoryName;
   @override
   Widget build(BuildContext context) {
     return products.isNotEmpty && variantList.isNotEmpty
@@ -46,7 +48,11 @@ class HomeProductListWithHeading extends StatelessWidget {
                         },
                       ).toList();
                       final variant = variants[0];
-                      return ProductTile(product: product, variant: variant);
+                      return ProductTile(
+                        product: product,
+                        variant: variant,
+                        categoryName: categoryName,
+                      );
                     },
                     // separatorBuilder: (context, index) => 20.horizontalSpace,
                     itemCount: products.length),
@@ -65,6 +71,7 @@ class ProductTile extends StatelessWidget {
     this.height,
     this.width,
     this.imageHeigh,
+    this.categoryName,
   });
 
   final ProductModel product;
@@ -72,6 +79,7 @@ class ProductTile extends StatelessWidget {
   final double? height;
   final double? width;
   final double? imageHeigh;
+  final String? categoryName;
 
   @override
   Widget build(BuildContext context) {
@@ -79,7 +87,9 @@ class ProductTile extends StatelessWidget {
       onTap: () {
         Navigator.pushNamed(context, RouteGenerator.detailScreen,
             arguments: ProductDetailArguments(
-                categoryId: product.categoryId ?? "", product: product));
+                categoryName: categoryName,
+                categoryId: product.categoryId ?? "",
+                product: product));
       },
       child: Padding(
         padding: EdgeInsets.all(10.r),

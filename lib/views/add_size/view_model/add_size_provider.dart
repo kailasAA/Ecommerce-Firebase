@@ -134,4 +134,13 @@ class AddSizeProvider extends ChangeNotifier {
       print(e.toString());
     }
   }
+
+  void reset() {
+    isSizeValidated = true;
+    isStockValidated = true;
+    isRecievingPriceValidated = true;
+    isSellingPriceValidated = true;
+    isDiscountPriceValidated = true;
+    notifyListeners();
+  }
 }

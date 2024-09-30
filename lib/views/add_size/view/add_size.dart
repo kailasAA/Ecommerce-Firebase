@@ -48,12 +48,18 @@ class AddSizeScreen extends StatelessWidget {
         final isSizeValidated = value.item2;
         final isStockValidated = value.item3;
         final isRecievingPriceValidated = value.item4;
-        final isSellingPriceValidated = value.item4;
-        final isDiscountPriceValidated = value.item4;
+        final isSellingPriceValidated = value.item5;
+        final isDiscountPriceValidated = value.item6;
 
         return Scaffold(
           backgroundColor: ColorPallette.scaffoldBgColor,
           appBar: AppBar(
+            leading: IconButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  addSizeProvider.reset();
+                },
+                icon: const Icon(Icons.arrow_back)),
             backgroundColor: ColorPallette.scaffoldBgColor,
             centerTitle: true,
             title: Text(

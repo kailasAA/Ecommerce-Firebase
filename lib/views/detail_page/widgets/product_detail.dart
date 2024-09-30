@@ -123,25 +123,25 @@ class _ProductDetailsWidgetState extends State<ProductDetailsWidget> {
           ),
           5.verticalSpace,
           Text(
-            "Selling Price : ₹${selectedSize?.sellingPrice ?? ""}",
+            "Selling Price : ₹${selectedSize?.sellingPrice ?? "0"}",
             style: FontPallette.headingStyle
                 .copyWith(fontSize: 15.sp, color: ColorPallette.darkGreyColor),
           ),
           5.verticalSpace,
           Text(
-            "Recieving Price : ₹${selectedSize?.receivingPrice ?? ""}",
+            "Recieving Price : ₹${selectedSize?.receivingPrice ?? "0"}",
             style: FontPallette.headingStyle
                 .copyWith(fontSize: 15.sp, color: ColorPallette.darkGreyColor),
           ),
           5.verticalSpace,
           Text(
-            "Discount Price : ₹${selectedSize?.discountPrice ?? ""}",
+            "Discount Price : ₹${selectedSize?.discountPrice ?? "0"}",
             style: FontPallette.headingStyle
                 .copyWith(fontSize: 15.sp, color: ColorPallette.darkGreyColor),
           ),
           5.verticalSpace,
           Text(
-            "Stock : ${selectedSize?.stock ?? ""}",
+            "Stock : ${selectedSize?.stock ?? "0"}",
             style: FontPallette.headingStyle
                 .copyWith(fontSize: 15.sp, color: ColorPallette.darkGreyColor),
           )

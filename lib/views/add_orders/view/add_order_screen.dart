@@ -22,7 +22,7 @@ class AddOrderScreen extends StatelessWidget {
     final product = addOrderArguments.product;
     final variant = addOrderArguments.variant;
     final sizeDetails = addOrderArguments.size;
-    final categoryName = addOrderArguments.categoryName;
+    // final categoryName = addOrderArguments.categoryName;
     final TextEditingController orderQuantityTextController =
         TextEditingController();
     final TextEditingController sellingPriceTextController =
@@ -347,7 +347,7 @@ class AddOrderScreen extends StatelessWidget {
                       onTap: () {
                         final DateTime now = DateTime.now();
                         final String formattedDate =
-                            DateFormat('dd-MM-yyyy').format(now);
+                            DateFormat('yyyy-MM-dd').format(now);
                         orderProvider.addOrders(
                           OrderModel(
                             orderCompleted: false,

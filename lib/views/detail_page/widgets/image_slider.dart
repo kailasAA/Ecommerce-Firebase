@@ -1,4 +1,3 @@
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -48,7 +47,7 @@ class _ImageSliderState extends State<ImageSlider> {
               if (pageController.hasClients && mounted) {
                 pageController
                     .animateToPage(nextPage,
-                        duration: const Duration(milliseconds: 300),
+                        duration: const Duration(milliseconds: 400),
                         curve: Curves.linearToEaseOut)
                     .then(
                       (value) => startAutoScroll(),
@@ -60,6 +59,8 @@ class _ImageSliderState extends State<ImageSlider> {
       },
     );
   }
+
+  
 
   @override
   void dispose() {

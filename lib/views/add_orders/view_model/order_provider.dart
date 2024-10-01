@@ -1,3 +1,4 @@
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:shoe_app/common/common_functions/show_toast.dart';
@@ -18,6 +19,18 @@ class OrderProvider extends ChangeNotifier {
   DateTime selectedTime = DateTime.now();
   List<OrderModel> allOrderList = [];
   List<OrderModel> filteredList = [];
+  List<DateTime> selectedDateRange = [];
+
+  void updateDateRange(DateTime start, DateTime end) {
+    selectedDateRange = [start, end];
+    filterOrders(start, end);
+    notifyListeners();
+  }
+
+  void clearDateRange() {
+    selectedDateRange = [];
+    notifyListeners();
+  }
 
 // validations
   void quantityValidation(bool isValidated) {
@@ -85,8 +98,6 @@ class OrderProvider extends ChangeNotifier {
   }
 
   Future<void> getOrders() async {
-    isLoading = true;
-    notifyListeners();
     try {
       final orderRef = firestore.collection("orders");
       final data = await orderRef.get();
@@ -108,25 +119,59 @@ class OrderProvider extends ChangeNotifier {
     }
   }
 
-  // Future<void> filterOrders(DateTime startDate, DateTime endDate) async {
-  //   isLoading = true;
-  //   notifyListeners();
+  Future<void> filterOrders(DateTime startDate, DateTime endDate) async {
+    isLoading = true;
+    notifyListeners();
 
-  //   try {
-  //     final orderRef = firestore.collection("orders");
-  //     final data = await orderRef.get();
-  //     final docs = data.docs;
-  //     final orderList = docs.map(
-  //       (order) {
-  //         return OrderModel.fromMap(order.data());
-  //       },
-  //     ).toList();
+    try {
+      final orderRef = firestore.collection("orders");
+      final data = await orderRef.get();
+      final docs = data.docs;
+      final orderList = docs.map(
+        (order) {
+          return OrderModel.fromMap(order.data());
+        },
+      ).toList();
+      // Filter orders by date range
 
-  //     isLoading = false;
-  //     notifyListeners();
-  //   } catch (e) {
-  //     isLoading = false;
-  //     notifyListeners();
-  //   }
-  // }
+      print("the start date is $startDate");
+      print("the end date is $endDate");
+
+      List<OrderModel> filteredOrders = orderList.where((order) {
+        DateTime? date = DateTime.tryParse(order.orderDate ?? "");
+        print("the checking date is $date");
+        return date!.isAfter(startDate) && date.isBefore(endDate) ||
+            date == startDate ||
+            date == endDate;
+      }).toList();
+
+      // Sort the filtered orders by date (newest first)
+      filteredOrders.sort((a, b) => b.orderDate!.compareTo(a.orderDate ?? ""));
+      allOrderList = [];
+      allOrderList = filteredOrders;
+      print(filteredOrders.length);
+      isLoading = false;
+      notifyListeners();
+    } catch (e) {
+      isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> completeOrder(String orderId) async {
+    isLoading = true;
+    notifyListeners();
+    try {
+      await firestore
+          .collection("orders")
+          .doc(orderId)
+          .update({"orderCompleted": true});
+      getOrders();
+      isLoading = false;
+      notifyListeners();
+    } catch (e) {
+      isLoading = false;
+      notifyListeners();
+    }
+  }
 }
